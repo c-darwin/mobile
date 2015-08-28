@@ -70,14 +70,14 @@ var (
 	// WorkAvailable communicates when DoWork should be called.
 	//
 	// This is an internal implementation detail and should only be used by the
-	// golang.org/x/mobile/app package.
+	// github.com/c-darwin/mobile/app package.
 	WorkAvailable <-chan struct{} = workAvailable
 )
 
 // DoWork performs any pending OpenGL calls.
 //
 // This is an internal implementation detail and should only be used by the
-// golang.org/x/mobile/app package.
+// github.com/c-darwin/mobile/app package.
 func DoWork() {
 	queue := make([]call, 0, len(work))
 	for {

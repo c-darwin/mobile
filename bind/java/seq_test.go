@@ -26,7 +26,7 @@ func TestJavaSeqTest(t *testing.T) {
 		t.Skip("ANDROID_HOME environment var not set, skipping")
 	}
 	if _, err := run("which gomobile"); err != nil {
-		_, err := run("go install golang.org/x/mobile/cmd/gomobile")
+		_, err := run("go install github.com/c-darwin/mobile/cmd/gomobile")
 		if err != nil {
 			t.Skip("gomobile not available, skipping")
 		}
@@ -57,7 +57,7 @@ func TestJavaSeqTest(t *testing.T) {
 		}
 	}
 
-	buf, err := run("gomobile bind golang.org/x/mobile/bind/java/testpkg")
+	buf, err := run("gomobile bind github.com/c-darwin/mobile/bind/java/testpkg")
 	if err != nil {
 		t.Logf("%s", buf)
 		t.Fatalf("failed to run gomobile bind: %v", err)

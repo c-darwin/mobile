@@ -20,7 +20,7 @@ import org.golang.mobile.AARPublishArtifact
 /*
  * GobindPlugin configures the default project that builds .AAR file
  * from a go package, using gomobile bind command.
- * For gomobile bind command, see https://golang.org/x/mobile/cmd/gomobile
+ * For gomobile bind command, see https://github.com/c-darwin/mobile/cmd/gomobile
  */
 class GobindPlugin implements Plugin<Project> {
     void apply(Project project) {

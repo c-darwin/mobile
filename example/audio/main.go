@@ -9,22 +9,22 @@
 // Note: This demo is an early preview of Go 1.5. In order to build this
 // program as an Android APK using the gomobile tool.
 //
-// See http://godoc.org/golang.org/x/mobile/cmd/gomobile to install gomobile.
+// See http://godoc.org/github.com/c-darwin/mobile/cmd/gomobile to install gomobile.
 //
 // Get the audio example and use gomobile to build or install it on your device.
 //
-//   $ go get -d golang.org/x/mobile/example/audio
-//   $ gomobile build golang.org/x/mobile/example/audio # will build an APK
+//   $ go get -d github.com/c-darwin/mobile/example/audio
+//   $ gomobile build github.com/c-darwin/mobile/example/audio # will build an APK
 //
 //   # plug your Android device to your computer or start an Android emulator.
 //   # if you have adb installed on your machine, use gomobile install to
 //   # build and deploy the APK to an Android target.
-//   $ gomobile install golang.org/x/mobile/example/audio
+//   $ gomobile install github.com/c-darwin/mobile/example/audio
 //
 // Additionally, you can run the sample on your desktop environment
 // by using the go tool.
 //
-//   $ go install golang.org/x/mobile/example/audio && audio
+//   $ go install github.com/c-darwin/mobile/example/audio && audio
 //
 // On Linux, you need to install OpenAL developer library by
 // running the command below.
@@ -39,18 +39,18 @@ import (
 
 	_ "image/jpeg"
 
-	"golang.org/x/mobile/app"
-	"golang.org/x/mobile/asset"
-	"golang.org/x/mobile/event/lifecycle"
-	"golang.org/x/mobile/event/paint"
-	"golang.org/x/mobile/event/size"
-	"golang.org/x/mobile/exp/app/debug"
-	"golang.org/x/mobile/exp/audio"
-	"golang.org/x/mobile/exp/f32"
-	"golang.org/x/mobile/exp/sprite"
-	"golang.org/x/mobile/exp/sprite/clock"
-	"golang.org/x/mobile/exp/sprite/glsprite"
-	"golang.org/x/mobile/gl"
+	"github.com/c-darwin/mobile/app"
+	"github.com/c-darwin/mobile/asset"
+	"github.com/c-darwin/mobile/event/lifecycle"
+	"github.com/c-darwin/mobile/event/paint"
+	"github.com/c-darwin/mobile/event/size"
+	"github.com/c-darwin/mobile/exp/app/debug"
+	"github.com/c-darwin/mobile/exp/audio"
+	"github.com/c-darwin/mobile/exp/f32"
+	"github.com/c-darwin/mobile/exp/sprite"
+	"github.com/c-darwin/mobile/exp/sprite/clock"
+	"github.com/c-darwin/mobile/exp/sprite/glsprite"
+	"github.com/c-darwin/mobile/gl"
 )
 
 const (

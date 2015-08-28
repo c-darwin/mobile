@@ -168,9 +168,9 @@ func runInit(cmd *command) error {
 }
 
 var commonPkgs = []string{
-	"golang.org/x/mobile/gl",
-	"golang.org/x/mobile/app",
-	"golang.org/x/mobile/exp/app/debug",
+	"github.com/c-darwin/mobile/gl",
+	"github.com/c-darwin/mobile/app",
+	"github.com/c-darwin/mobile/exp/app/debug",
 }
 
 func installDarwin() error {

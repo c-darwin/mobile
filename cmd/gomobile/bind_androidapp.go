@@ -52,11 +52,11 @@ func goAndroidBind(pkg *build.Package) error {
 		return err
 	}
 
-	p, err := ctx.Import("golang.org/x/mobile/bind", cwd, build.ImportComment)
+	p, err := ctx.Import("github.com/c-darwin/mobile/bind", cwd, build.ImportComment)
 	if err != nil {
-		return fmt.Errorf(`"golang.org/x/mobile/bind" is not found; run go get golang.org/x/mobile/bind`)
+		return fmt.Errorf(`"github.com/c-darwin/mobile/bind" is not found; run go get github.com/c-darwin/mobile/bind`)
 	}
-	repo := filepath.Clean(filepath.Join(p.Dir, "..")) // golang.org/x/mobile directory.
+	repo := filepath.Clean(filepath.Join(p.Dir, "..")) // github.com/c-darwin/mobile directory.
 
 	// TODO(crawshaw): use a better package path derived from the go package.
 	if err := binder.GenJava(filepath.Join(androidDir, "src/main/java/go/"+binder.pkg.Name())); err != nil {
@@ -95,7 +95,7 @@ var androidMainTmpl = template.Must(template.New("android.go").Parse(`
 package main
 
 import (
-	_ "golang.org/x/mobile/bind/java"
+	_ "github.com/c-darwin/mobile/bind/java"
 	_ "{{.}}"
 )
 

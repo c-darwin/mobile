@@ -11,13 +11,13 @@ import (
 	"log"
 	"net"
 
-	"golang.org/x/mobile/app"
-	"golang.org/x/mobile/app/internal/apptest"
-	"golang.org/x/mobile/event/lifecycle"
-	"golang.org/x/mobile/event/paint"
-	"golang.org/x/mobile/event/size"
-	"golang.org/x/mobile/event/touch"
-	"golang.org/x/mobile/gl"
+	"github.com/c-darwin/mobile/app"
+	"github.com/c-darwin/mobile/app/internal/apptest"
+	"github.com/c-darwin/mobile/event/lifecycle"
+	"github.com/c-darwin/mobile/event/paint"
+	"github.com/c-darwin/mobile/event/size"
+	"github.com/c-darwin/mobile/event/touch"
+	"github.com/c-darwin/mobile/gl"
 )
 
 func main() {

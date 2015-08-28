@@ -159,7 +159,7 @@ var usageTmpl = template.Must(template.New("usage").Parse(
 
 To install:
 
-	$ go get golang.org/x/mobile/cmd/gomobile
+	$ go get github.com/c-darwin/mobile/cmd/gomobile
 	$ gomobile init
 
 At least Go 1.5 is required.

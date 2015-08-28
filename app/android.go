@@ -57,15 +57,15 @@ import (
 	"time"
 	"unsafe"
 
-	"golang.org/x/mobile/app/internal/callfn"
-	"golang.org/x/mobile/event/key"
-	"golang.org/x/mobile/event/lifecycle"
-	"golang.org/x/mobile/event/paint"
-	"golang.org/x/mobile/event/size"
-	"golang.org/x/mobile/event/touch"
-	"golang.org/x/mobile/geom"
-	"golang.org/x/mobile/gl"
-	"golang.org/x/mobile/internal/mobileinit"
+	"github.com/c-darwin/mobile/app/internal/callfn"
+	"github.com/c-darwin/mobile/event/key"
+	"github.com/c-darwin/mobile/event/lifecycle"
+	"github.com/c-darwin/mobile/event/paint"
+	"github.com/c-darwin/mobile/event/size"
+	"github.com/c-darwin/mobile/event/touch"
+	"github.com/c-darwin/mobile/geom"
+	"github.com/c-darwin/mobile/gl"
+	"github.com/c-darwin/mobile/internal/mobileinit"
 )
 
 //export setCurrentContext

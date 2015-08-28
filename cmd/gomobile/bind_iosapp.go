@@ -118,7 +118,7 @@ var iosBindTmpl = template.Must(template.New("ios.go").Parse(`
 package main
 
 import (
-	_ "golang.org/x/mobile/bind/objc"
+	_ "github.com/c-darwin/mobile/bind/objc"
 	_ "{{.}}"
 )
 

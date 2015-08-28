@@ -13,12 +13,12 @@ import (
 	"runtime"
 	"sync"
 
-	"golang.org/x/mobile/app"
-	"golang.org/x/mobile/event/lifecycle"
-	"golang.org/x/mobile/event/size"
-	"golang.org/x/mobile/exp/f32"
-	"golang.org/x/mobile/geom"
-	"golang.org/x/mobile/gl"
+	"github.com/c-darwin/mobile/app"
+	"github.com/c-darwin/mobile/event/lifecycle"
+	"github.com/c-darwin/mobile/event/size"
+	"github.com/c-darwin/mobile/exp/f32"
+	"github.com/c-darwin/mobile/geom"
+	"github.com/c-darwin/mobile/gl"
 )
 
 var glimage struct {

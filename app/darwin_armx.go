@@ -29,12 +29,12 @@ import (
 	"sync"
 	"unsafe"
 
-	"golang.org/x/mobile/event/lifecycle"
-	"golang.org/x/mobile/event/paint"
-	"golang.org/x/mobile/event/size"
-	"golang.org/x/mobile/event/touch"
-	"golang.org/x/mobile/geom"
-	"golang.org/x/mobile/gl"
+	"github.com/c-darwin/mobile/event/lifecycle"
+	"github.com/c-darwin/mobile/event/paint"
+	"github.com/c-darwin/mobile/event/size"
+	"github.com/c-darwin/mobile/event/touch"
+	"github.com/c-darwin/mobile/geom"
+	"github.com/c-darwin/mobile/gl"
 )
 
 var initThreadID uint64

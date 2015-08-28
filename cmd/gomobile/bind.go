@@ -19,8 +19,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"golang.org/x/mobile/bind"
-	"golang.org/x/mobile/internal/loader"
+	"github.com/c-darwin/mobile/bind"
+	"github.com/c-darwin/mobile/internal/loader"
 )
 
 // ctx, pkg, tmpdir in build.go
@@ -132,7 +132,7 @@ func (b *binder) GenObjc(outdir string) error {
 		return err
 	}
 
-	objcPkg, err := ctx.Import("golang.org/x/mobile/bind/objc", "", build.FindOnly)
+	objcPkg, err := ctx.Import("github.com/c-darwin/mobile/bind/objc", "", build.FindOnly)
 	if err != nil {
 		return err
 	}

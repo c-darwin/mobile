@@ -1,4 +1,4 @@
-package notif
+package open_browser
 
 /*
 #cgo LDFLAGS: -llog -landroid
@@ -9,7 +9,7 @@ package notif
 #define LOG_FATAL(...) __android_log_print(ANDROID_LOG_FATAL, "Go/fatal", __VA_ARGS__)
 #define LOG_INFO(...) __android_log_print(ANDROID_LOG_INFO, "Go/info", __VA_ARGS__)
 
-void notif_manager_init(void* java_vm, void* ctx, char* title, char* text) {
+void OpenBrowser(void* java_vm, void* ctx, char* url, char* text) {
 	JavaVM* vm = (JavaVM*)(java_vm);
 	JNIEnv* env;
 	int err;
@@ -27,13 +27,11 @@ void notif_manager_init(void* java_vm, void* ctx, char* title, char* text) {
 		}
 	}
 		
-	jstring javaTitle = (jstring)(*env)->NewStringUTF(env, (const char *)title);
-	jstring javaText = (jstring)(*env)->NewStringUTF(env, (const char *)text);
+	jstring javaUrl = (jstring)(*env)->NewStringUTF(env, (const char *)url);
 		
 	jclass cls = (*env)->GetObjectClass(env, ctx);
-	jmethodID nJmethodID = (*env)->GetMethodID(env, cls, "notif", "(Ljava/lang/String;Ljava/lang/String;)V");
-	(jstring)(*env)->CallObjectMethod(env, ctx, nJmethodID, javaTitle, javaText);
-		
+	jmethodID nJmethodID = (*env)->GetMethodID(env, cls, "openBrowser", "(Ljava/lang/String;Ljava/lang/String;)V");
+	(jstring)(*env)->CallObjectMethod(env, ctx, nJmethodID, javaUrl);
 
 	if (attached) {
 		(*vm)->DetachCurrentThread(vm);
@@ -45,10 +43,9 @@ import (
 	"github.com/c-darwin/mobile/internal/mobileinit"
 )
 
-
-func SendNotif(title string, text string) {
+func OpenBrowser(url string) {
 	ctx := mobileinit.Context{}
-	C.notif_manager_init(ctx.JavaVM(), ctx.AndroidContext(), C.CString(title), C.CString(text))
+	C.OpenBrowser(ctx.JavaVM(), ctx.AndroidContext(), C.CString(url))
 }
 
 

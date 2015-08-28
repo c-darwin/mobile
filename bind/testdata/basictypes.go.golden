@@ -6,7 +6,7 @@ package go_basictypes
 
 import (
 	"basictypes"
-	"golang.org/x/mobile/bind/seq"
+	"github.com/c-darwin/mobile/bind/seq"
 )
 
 func proxy_Bool(out, in *seq.Buffer) {

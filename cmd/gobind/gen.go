@@ -17,8 +17,8 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"golang.org/x/mobile/bind"
-	"golang.org/x/mobile/internal/loader"
+	"github.com/c-darwin/mobile/bind"
+	"github.com/c-darwin/mobile/internal/loader"
 )
 
 func genPkg(pkg *build.Package) {

@@ -10,8 +10,8 @@ package main
 import "C"
 
 import (
-	_ "golang.org/x/mobile/bind/objc"
-	_ "golang.org/x/mobile/bind/objc/testpkg/go_testpkg"
+	_ "github.com/c-darwin/mobile/bind/objc"
+	_ "github.com/c-darwin/mobile/bind/objc/testpkg/go_testpkg"
 )
 
 func main() {

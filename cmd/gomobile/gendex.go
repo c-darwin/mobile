@@ -44,7 +44,7 @@ func main() {
 	}
 
 	err = gendex()
-	os.RemoveAll(tmpdir)
+	//os.RemoveAll(tmpdir)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -74,6 +74,7 @@ func gendex() error {
 		"-source", "1.7",
 		"-target", "1.7",
 		"-bootclasspath", platform+"/android.jar",
+		"-classpath", "/home/z/go-projects/src/github.com/c-darwin/dcoin-go-tmp/R.jar:"+androidHome+"/extras/android/m2repository/com/android/support/support-v4/22.2.1/support-v4-22.2.1-sources.jar",
 		"-d", tmpdir+"/work",
 	)
 	cmd.Args = append(cmd.Args, javaFiles...)

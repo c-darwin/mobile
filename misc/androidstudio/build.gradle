@@ -28,8 +28,8 @@ dependencies {
 }
 
 pluginBundle {
-  website = 'https://golang.org/x/mobile'
-  vcsUrl = 'https://golang.org/x/mobile'
+  website = 'https://github.com/c-darwin/mobile'
+  vcsUrl = 'https://github.com/c-darwin/mobile'
   description = 'Plugin for gomobile projects (beta)'
   version = '0.2.2'
 

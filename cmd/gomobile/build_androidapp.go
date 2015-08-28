@@ -150,7 +150,7 @@ func goAndroidBuild(pkg *build.Package) (map[string]bool, error) {
 		}
 	}
 
-	if nmpkgs["golang.org/x/mobile/exp/audio/al"] {
+	if nmpkgs["github.com/c-darwin/mobile/exp/audio/al"] {
 		alDir := filepath.Join(ndkccpath, "openal/lib")
 		filepath.Walk(alDir, func(path string, info os.FileInfo, err error) error {
 			if err != nil {

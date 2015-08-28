@@ -5,7 +5,7 @@
 package go_interfaces
 
 import (
-	"golang.org/x/mobile/bind/seq"
+	"github.com/c-darwin/mobile/bind/seq"
 	"interfaces"
 )
 

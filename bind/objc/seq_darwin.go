@@ -22,7 +22,7 @@ import (
 	"sync"
 	"unsafe"
 
-	"golang.org/x/mobile/bind/seq"
+	"github.com/c-darwin/mobile/bind/seq"
 )
 
 const debug = false

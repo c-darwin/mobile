@@ -5,7 +5,7 @@
 // +build darwin linux
 
 // Package testpkg contains bound functions for testing the cgo-JNI interface.
-// This is used in tests of golang.org/x/mobile/bind/java.
+// This is used in tests of github.com/c-darwin/mobile/bind/java.
 package testpkg
 
 //go:generate gobind -lang=go -outdir=go_testpkg .
@@ -18,7 +18,7 @@ import (
 	"runtime"
 	"time"
 
-	"golang.org/x/mobile/asset"
+	"github.com/c-darwin/mobile/asset"
 )
 
 type I interface {

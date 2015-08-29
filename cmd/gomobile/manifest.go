@@ -7,7 +7,7 @@ package main
 import (
 	"encoding/xml"
 	"errors"
-	"fmt"
+	//"fmt"
 	"html/template"
 )
 
@@ -32,9 +32,9 @@ func manifestLibName(data []byte) (string, error) {
 	if err := xml.Unmarshal(data, manifest); err != nil {
 		return "", err
 	}
-	if manifest.Activity.Name != "org.golang.app.GoNativeActivity" {
-		return "", fmt.Errorf("can only build an .apk for GoNativeActivity, not %q", manifest.Activity.Name)
-	}
+	//if manifest.Activity.Name != "org.golang.app.GoNativeActivity" {
+	//	return "", fmt.Errorf("can only build an .apk for GoNativeActivity, not %q", manifest.Activity.Name)
+	//}
 	libName := ""
 	for _, md := range manifest.Activity.MetaData {
 		if md.Name == "android.app.lib_name" {

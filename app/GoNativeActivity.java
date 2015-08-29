@@ -26,8 +26,8 @@ public class GoNativeActivity extends NativeActivity {
     }  
         
     public void openBrowser(String url) {
-    	  Intent intent = new Intent(Intent.ACTION_VIEW);
-	Uri data = Uri.parse("http://localhost:8089");
+    	  	Intent intent = new Intent(Intent.ACTION_VIEW);
+			Uri data = Uri.parse("http://localhost:8089");
 			  intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 			  intent.setData(data);
 			  startActivity(intent);
@@ -98,9 +98,9 @@ public class GoNativeActivity extends NativeActivity {
     }
     @Override
     public void onCreate(Bundle savedInstanceState) {
-            
-        moveTaskToBack(true);
-        
+
+		moveTaskToBack(true);
+
         super.onCreate(savedInstanceState);        
     }
 }

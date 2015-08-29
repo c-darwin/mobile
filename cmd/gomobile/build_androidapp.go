@@ -150,7 +150,7 @@ func goAndroidBuild(pkg *build.Package) (map[string]bool, error) {
 		}
 	}
 
-	if nmpkgs["github.com/c-darwin/mobile/exp/audio/al"] {
+	if nmpkgs["golang.org/x/mobile/exp/audio/al"] {
 		alDir := filepath.Join(ndkccpath, "openal/lib")
 		filepath.Walk(alDir, func(path string, info os.FileInfo, err error) error {
 			if err != nil {
@@ -214,6 +214,66 @@ func goAndroidBuild(pkg *build.Package) (map[string]bool, error) {
 			return nil, fmt.Errorf("asset %v", err)
 		}
 	}
+
+
+
+
+	// Add any res.
+	resDir := filepath.Join(pkg.Dir, "res")
+	resDirExists := true
+	fi, err = os.Stat(resDir)
+	if err != nil {
+		if os.IsNotExist(err) {
+			resDirExists = false
+		} else {
+			return nil, err
+		}
+	} else {
+		resDirExists = fi.IsDir()
+	}
+	if resDirExists {
+		err = filepath.Walk(resDir, func(path string, info os.FileInfo, err error) error {
+			if err != nil {
+				return err
+			}
+			if info.IsDir() {
+				return nil
+			}
+			name := "res/" + path[len(resDir)+1:]
+			w, err := apkwcreate(name)
+			if err != nil {
+				return err
+			}
+			f, err := os.Open(path)
+			if err != nil {
+				return err
+			}
+			defer f.Close()
+			_, err = io.Copy(w, f)
+			return err
+		})
+		if err != nil {
+			return nil, fmt.Errorf("res %v", err)
+		}
+	}
+
+
+	name := "resources.arsc"
+	resPath := filepath.Join(pkg.Dir, name)
+	w, err = apkwcreate(name)
+	if err != nil {
+		return nil, err
+	}
+	f, err := os.Open(resPath)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+	_, err = io.Copy(w, f)
+	if err != nil {
+		return nil, err
+	}
+
 
 	// TODO: add gdbserver to apk?
 

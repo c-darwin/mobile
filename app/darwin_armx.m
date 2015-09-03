@@ -15,6 +15,7 @@
 
 struct utsname sysInfo;
 
+
 @interface GoAppAppController : GLKViewController<UIContentContainer>
 @end
 
@@ -25,6 +26,10 @@ struct utsname sysInfo;
 
 @implementation GoAppAppDelegate
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+
+    NSLog(@"golog2 didFinishLaunchingWithOptions");
+    [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
+
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	self.controller = [[GoAppAppController alloc] initWithNibName:nil bundle:nil];
 	self.window.rootViewController = self.controller;
@@ -40,6 +45,68 @@ struct utsname sysInfo;
 @implementation GoAppAppController
 - (void)viewDidLoad {
 	[super viewDidLoad];
+
+    NSLog(@"golog2 viewDidLoad");
+
+	UIApplication * application = [UIApplication sharedApplication];
+
+	if([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)])
+	{
+		NSLog(@"golog2: Multitasking Supported");
+
+		__block UIBackgroundTaskIdentifier background_task;
+		background_task = [application beginBackgroundTaskWithExpirationHandler:^ {
+
+			//Clean up code. Tell the system that we are done.
+			[application endBackgroundTask: background_task];
+			background_task = UIBackgroundTaskInvalid;
+		}];
+
+		//To make the code block asynchronous
+		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+
+			//### background task starts
+			NSLog(@"golog2>: Running in the background\n");
+			dcoinStart();
+			while(TRUE)
+			{
+			int tRem = [[UIApplication sharedApplication] backgroundTimeRemaining];
+				NSLog(@"golog2 b20.3>: Background time Remaining: %f",tRem);
+			if (tRem < 10 && tRem > 0) {
+				dcoinStop();
+			}
+				[NSThread sleepForTimeInterval:1]; //wait for 1 sec
+			}
+			//#### background task ends
+
+			//Clean up code. Tell the system that we are done.
+			[application endBackgroundTask: background_task];
+			background_task = UIBackgroundTaskInvalid;
+		});
+	}
+	else
+	{
+		NSLog(@"golog2: Multitasking Not Supported");
+	}
+
+	NSLog(@"golog2: UIWebView 0");
+
+	[NSThread sleepForTimeInterval:3];
+
+    @try {
+        UIWebView *webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, 320, 480)];
+        [webView setDelegate:self];
+
+        NSString *urlAddress = @"http://127.0.0.1:8089/";
+        NSURL *url = [NSURL URLWithString:urlAddress];
+        NSURLRequest *requestObj = [NSURLRequest requestWithURL:url];
+        [webView loadRequest:requestObj];
+
+        [self.view addSubview:webView];
+	}@catch (NSException *exception) {
+       NSLog(@"golog2 ERR: %@", exception.reason);
+    }
+
 	self.preferredFramesPerSecond = 60;
 	self.context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
 	GLKView *view = (GLKView *)self.view;
@@ -68,6 +135,7 @@ struct utsname sysInfo;
 }
 
 - (void)update {
+	//NSLog(@"golog2 update");
 	drawgl((GoUintptr)self.context);
 }
 
@@ -76,6 +144,7 @@ struct utsname sysInfo;
 #define TOUCH_TYPE_END   2 // touch.TypeEnd
 
 static void sendTouches(int change, NSSet* touches) {
+    NSLog(@"golog2 sendTouches");
 	CGFloat scale = [UIScreen mainScreen].scale;
 	for (UITouch* touch in touches) {
 		CGPoint p = [touch locationInView:touch.view];
@@ -97,6 +166,7 @@ static void sendTouches(int change, NSSet* touches) {
 @end
 
 void runApp(void) {
+    NSLog(@"golog2 runApp");
 	@autoreleasepool {
 		UIApplicationMain(0, nil, nil, NSStringFromClass([GoAppAppDelegate class]));
 	}
@@ -110,6 +180,12 @@ void setContext(void* context) {
 	}
 }
 
+char* GetFilesDir(void) {
+        NSArray *paths = NSSearchPathForDirectoriesInDomains (NSDocumentDirectory, NSUserDomainMask, YES);
+        NSString *documentsDirectory = [paths objectAtIndex:0];
+        return (char*)[documentsDirectory UTF8String];
+}
+
 uint64_t threadID() {
 	uint64_t id;
 	if (pthread_threadid_np(pthread_self(), &id)) {
@@ -117,3 +193,4 @@ uint64_t threadID() {
 	}
 	return id;
 }
+

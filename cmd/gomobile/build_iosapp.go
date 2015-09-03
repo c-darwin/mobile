@@ -201,6 +201,11 @@ var infoplistTmpl = template.Must(template.New("infoplist").Parse(`<?xml version
     <string>UIInterfaceOrientationLandscapeLeft</string>
     <string>UIInterfaceOrientationLandscapeRight</string>
   </array>
+  <key>UIBackgroundModes</key>
+  <array>
+    <string>fetch</string>
+    <string>remote-notification</string>
+  </array>
 </dict>
 </plist>
 `))

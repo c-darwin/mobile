@@ -17,6 +17,7 @@ package app
 
 extern struct utsname sysInfo;
 
+char* GetFilesDir(void);
 void runApp(void);
 void setContext(void* context);
 uint64_t threadID();
@@ -28,7 +29,7 @@ import (
 	"strings"
 	"sync"
 	"unsafe"
-
+	"github.com/c-darwin/dcoin-go-tmp/packages/dcoin"
 	"github.com/c-darwin/mobile/event/lifecycle"
 	"github.com/c-darwin/mobile/event/paint"
 	"github.com/c-darwin/mobile/event/size"
@@ -38,6 +39,16 @@ import (
 )
 
 var initThreadID uint64
+
+//export dcoinStart
+func dcoinStart(){
+	go dcoin.Start(C.GoString(C.GetFilesDir()));
+}
+
+//export dcoinStop
+func dcoinStop(){
+	go dcoin.Stop();
+}
 
 func init() {
 	// Lock the goroutine responsible for initialization to an OS thread.

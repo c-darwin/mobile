@@ -99,27 +99,34 @@ func callMain(mainPC uintptr) {
 
 //export onStart
 func onStart(activity *C.ANativeActivity) {
+	fmt.Println("onStart")
 }
 
 //export onResume
 func onResume(activity *C.ANativeActivity) {
+	fmt.Println("onResume")
 }
 
 //export onSaveInstanceState
 func onSaveInstanceState(activity *C.ANativeActivity, outSize *C.size_t) unsafe.Pointer {
+	fmt.Println("onSaveInstanceState")
 	return nil
 }
 
 //export onPause
 func onPause(activity *C.ANativeActivity) {
+	fmt.Println("onPause")
 }
 
 //export onStop
 func onStop(activity *C.ANativeActivity) {
+	fmt.Println("onStop")
 }
 
 //export onCreate
 func onCreate(activity *C.ANativeActivity) {
+	fmt.Println("onCreate")
+
 	// Set the initial configuration.
 	//
 	// Note we use unbuffered channels to talk to the activity loop, and
@@ -130,19 +137,23 @@ func onCreate(activity *C.ANativeActivity) {
 
 //export onDestroy
 func onDestroy(activity *C.ANativeActivity) {
+	fmt.Println("onDestroy")
 }
 
 //export onWindowFocusChanged
 func onWindowFocusChanged(activity *C.ANativeActivity, hasFocus int) {
+	fmt.Println("onWindowFocusChanged")
 }
 
 //export onNativeWindowCreated
 func onNativeWindowCreated(activity *C.ANativeActivity, w *C.ANativeWindow) {
+	fmt.Println("onNativeWindowCreated")
 	windowCreated <- w
 }
 
 //export onNativeWindowRedrawNeeded
 func onNativeWindowRedrawNeeded(activity *C.ANativeActivity, window *C.ANativeWindow) {
+	fmt.Println("onNativeWindowRedrawNeeded")
 	// Called on orientation change and window resize.
 	// Send a request for redraw, and block this function
 	// until a complete draw and buffer swap is completed.
@@ -154,21 +165,25 @@ func onNativeWindowRedrawNeeded(activity *C.ANativeActivity, window *C.ANativeWi
 
 //export onNativeWindowDestroyed
 func onNativeWindowDestroyed(activity *C.ANativeActivity, window *C.ANativeWindow) {
+	fmt.Println("onNativeWindowDestroyed")
 	windowDestroyed <- window
 }
 
 //export onInputQueueCreated
 func onInputQueueCreated(activity *C.ANativeActivity, q *C.AInputQueue) {
+	fmt.Println("onInputQueueCreated")
 	inputQueue <- q
 }
 
 //export onInputQueueDestroyed
 func onInputQueueDestroyed(activity *C.ANativeActivity, q *C.AInputQueue) {
+	fmt.Println("onInputQueueDestroyed")
 	inputQueue <- nil
 }
 
 //export onContentRectChanged
 func onContentRectChanged(activity *C.ANativeActivity, rect *C.ARect) {
+	fmt.Println("onContentRectChanged")
 }
 
 type windowConfig struct {

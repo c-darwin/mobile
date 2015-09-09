@@ -22,6 +22,7 @@ public class GoNativeActivity extends NativeActivity {
 
     public GoNativeActivity() {
         super();
+		Log.d("Go", "GoNativeActivity");
         goNativeActivity = this;
     }  
         
@@ -34,7 +35,9 @@ public class GoNativeActivity extends NativeActivity {
     }
     
     public void notif(String title, String text) {
- 
+
+	  Log.d("Go", "GoNativeActivity notif");
+
   	  Intent intent = new Intent("org.golang.app.MainActivity");	    
 
 	  NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this);
@@ -68,6 +71,7 @@ public class GoNativeActivity extends NativeActivity {
 
     public static void load() {
 
+		Log.d("Go", "GoNativeActivity load");
         // Interestingly, NativeActivity uses a different method
         // to find native code to execute, avoiding
         // System.loadLibrary. The result is Java methods
@@ -76,17 +80,18 @@ public class GoNativeActivity extends NativeActivity {
         // is done. So we do it here, borrowing the name of the
         // library from the same AndroidManifest.xml metadata used
         // by NativeActivity.
-	try {
-	    System.loadLibrary("dcoin");
-		
-	} catch (Exception e) {
-		Log.e("Go", "loadLibrary failed", e);
-	}
+		try {
+			System.loadLibrary("dcoin");
+
+		} catch (Exception e) {
+			Log.e("Go", "loadLibrary failed", e);
+		}
     }
 
     public void onStart(Bundle savedInstanceState) {
-    
-    		  try {
+
+		Log.d("Go", "GoNativeActivity onStart");
+    	  try {
 			  Intent intent = new Intent(Intent.ACTION_VIEW);
 			  Uri data = Uri.parse("http://localhost:8089");
 			  intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -98,6 +103,8 @@ public class GoNativeActivity extends NativeActivity {
     }
     @Override
     public void onCreate(Bundle savedInstanceState) {
+
+		Log.d("Go", "GoNativeActivity onCreate");
 
 		moveTaskToBack(true);
 

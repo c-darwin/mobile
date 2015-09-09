@@ -11,22 +11,27 @@ public class MyService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
+        Log.d("Go", "MyService onBind");
         return null;
     }
 
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.d("Go", "MyService onStartCommand");
         return super.onStartCommand(intent, flags, startId);
     }
 
     public void onStart() {
+        Log.d("Go", "MyService onStart");
     }
 
     public void onDestroy() {
+        Log.d("Go", "MyService onDestroy");
         super.onDestroy();
     }
 
     @Override
     public void onCreate() {
+        Log.d("Go", "MyService onCreate");
         super.onCreate();
 
         ShortcutIcon();
@@ -43,6 +48,7 @@ public class MyService extends Service {
 
     void sendNotif() {
 
+        Log.d("Go", "MyService sendNotif");
         Notification notif = new Notification(R.drawable.icon, "Dcoin", System.currentTimeMillis());
 
         Intent intent = new Intent(this, MainActivity.class);
@@ -55,6 +61,7 @@ public class MyService extends Service {
     }
     private void ShortcutIcon(){
 
+        Log.d("Go", "MyService ShortcutIcon");
         Intent shortcutIntent = new Intent(getApplicationContext(), MainActivity.class);
         shortcutIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         shortcutIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

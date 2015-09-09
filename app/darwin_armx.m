@@ -15,158 +15,351 @@
 
 struct utsname sysInfo;
 
+@interface ViewController : UIViewController<UIWebViewDelegate,UIScrollViewDelegate,UITextFieldDelegate>
+{
+    IBOutlet UIWebView *webView;
+    IBOutlet UISlider *slider;
+    IBOutlet UILabel *lbl;
+    IBOutlet UITextField *txtField;
+    IBOutlet UIButton *btn;
+    IBOutlet UISwitch *swich;
+    IBOutlet UIScrollView *scView;
 
-@interface GoAppAppController : GLKViewController<UIContentContainer>
+
+}
+//property (strong, nonatomic) IBOutlet UIWebView *viewWeb;
+//property (nonatomic, retain) UIWebView *page;
+@property(nonatomic,retain)UIWebView *webView;
+@property(nonatomic,retain)UISlider *slider;
+@property(nonatomic,retain)UILabel *lbl;
+@property(nonatomic,retain)UITextField *txtField;
+@property(nonatomic,retain)UIButton *btn;
+@property(nonatomic,retain)UIScrollView *scView;
+@property(nonatomic,retain)UISwitch *swich;
+
+-(IBAction)sliderChanged:(UISlider *)slider;
+
 @end
 
-@interface GoAppAppDelegate : UIResponder<UIApplicationDelegate>
+
+@interface GoAppAppDelegate : UIResponder <UIApplicationDelegate>
+@property (nonatomic, strong) ViewController *vc;
 @property (strong, nonatomic) UIWindow *window;
-@property (strong, nonatomic) GoAppAppController *controller;
 @end
 
 @implementation GoAppAppDelegate
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+
+-(void)application:(UIApplication *)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
+{
+        NSLog(@"golog2 performFetchWithCompletionHandler");
+	for (int i=0;i<15;i++)
+        {
+            int tRem = [[UIApplication sharedApplication] backgroundTimeRemaining];
+            NSLog(@"golog2 b20.3>: Background +++++++++++ time Remaining: %d",tRem);
+            if (i == 15) {
+                NSLog(@"golog2 b20.3>: DCOIN STOP");
+                dcoinStopHTTPServer();
+                dcoinStop();
+            }
+            [NSThread sleepForTimeInterval:1]; //wait for 1 sec
+        }
+        completionHandler(UIBackgroundFetchResultNewData); 
+}
+
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+{
+    [[UIApplication sharedApplication] setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
 
     NSLog(@"golog2 didFinishLaunchingWithOptions");
-    [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
 
-	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-	self.controller = [[GoAppAppController alloc] initWithNibName:nil bundle:nil];
-	self.window.rootViewController = self.controller;
-	[self.window makeKeyAndVisible];
-	return YES;
-}
-@end
 
-@interface GoAppAppController ()
-@property (strong, nonatomic) EAGLContext *context;
-@end
-
-@implementation GoAppAppController
-- (void)viewDidLoad {
-	[super viewDidLoad];
-
-    NSLog(@"golog2 viewDidLoad");
-
-	UIApplication * application = [UIApplication sharedApplication];
-
-	if([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)])
-	{
-		NSLog(@"golog2: Multitasking Supported");
-
-		__block UIBackgroundTaskIdentifier background_task;
-		background_task = [application beginBackgroundTaskWithExpirationHandler:^ {
-
-			//Clean up code. Tell the system that we are done.
-			[application endBackgroundTask: background_task];
-			background_task = UIBackgroundTaskInvalid;
-		}];
-
-		//To make the code block asynchronous
-		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-
-			//### background task starts
-			NSLog(@"golog2>: Running in the background\n");
-			dcoinStart();
-			while(TRUE)
-			{
-			int tRem = [[UIApplication sharedApplication] backgroundTimeRemaining];
-				NSLog(@"golog2 b20.3>: Background time Remaining: %f",tRem);
-			if (tRem < 10 && tRem > 0) {
-				dcoinStop();
-			}
-				[NSThread sleepForTimeInterval:1]; //wait for 1 sec
-			}
-			//#### background task ends
-
-			//Clean up code. Tell the system that we are done.
-			[application endBackgroundTask: background_task];
-			background_task = UIBackgroundTaskInvalid;
-		});
-	}
-	else
-	{
-		NSLog(@"golog2: Multitasking Not Supported");
-	}
-
-	NSLog(@"golog2: UIWebView 0");
-
-	[NSThread sleepForTimeInterval:3];
-
-    @try {
-        UIWebView *webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, 320, 480)];
-        [webView setDelegate:self];
-
-        NSString *urlAddress = @"http://127.0.0.1:8089/";
-        NSURL *url = [NSURL URLWithString:urlAddress];
-        NSURLRequest *requestObj = [NSURLRequest requestWithURL:url];
-        [webView loadRequest:requestObj];
-
-        [self.view addSubview:webView];
-	}@catch (NSException *exception) {
-       NSLog(@"golog2 ERR: %@", exception.reason);
+    if ([UIApplication instancesRespondToSelector:@selector(registerUserNotificationSettings:)]) {
+        [[UIApplication sharedApplication] registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:UIUserNotificationTypeAlert|UIUserNotificationTypeSound|UIUserNotificationTypeBadge
+                                                                                                              categories:nil]];
+    }
+    //-- Set Notification
+    if ([application respondsToSelector:@selector(isRegisteredForRemoteNotifications)])
+    {
+        // iOS 8 Notifications
+        [application registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge) categories:nil]];
+        
+        [application registerForRemoteNotifications];
+    }
+    else
+    {
+        // iOS < 8 Notifications
+        [application registerForRemoteNotificationTypes:
+         (UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound)];
     }
 
-	self.preferredFramesPerSecond = 60;
-	self.context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
-	GLKView *view = (GLKView *)self.view;
-	view.context = self.context;
-	view.drawableDepthFormat = GLKViewDrawableDepthFormat24;
-	view.multipleTouchEnabled = true; // TODO expose setting to user.
 
-	int scale = 1;
-	if ([[UIScreen mainScreen] respondsToSelector:@selector(displayLinkWithTarget:selector:)]) {
-		scale = (int)[UIScreen mainScreen].scale; // either 1.0, 2.0, or 3.0.
-	}
-	setScreen(scale);
 
-	CGSize size = [UIScreen mainScreen].bounds.size;
-	UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
-	updateConfig((int)size.width, (int)size.height, orientation);
+
+//    dcoinStart();
+//   self.vc = [[ViewController alloc] initWithNibName:nil bundle:nil];
+//    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+//    self.window.rootViewController = self.vc;
+//    self.window.backgroundColor = [UIColor greenColor];
+//    [self.window makeKeyAndVisible];
+
+
+if([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)])
+{
+    NSLog(@"golog2: Multitasking Supported");
+
+    __block UIBackgroundTaskIdentifier background_task;
+    background_task = [application beginBackgroundTaskWithExpirationHandler:^ {
+
+        //Clean up code. Tell the system that we are done.
+        [application endBackgroundTask: background_task];
+        background_task = UIBackgroundTaskInvalid;
+    }];
+
+    //To make the code block asynchronous
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+
+        //### background task starts
+        NSLog(@"golog2>: Running in the background\n");
+	//goserv();
+	dcoinStart();
+        while(TRUE)
+        {
+ 	    int tRem = [[UIApplication sharedApplication] backgroundTimeRemaining];
+            NSLog(@"golog2 b20.3>: Background time Remaining: %d",tRem);
+	    if (tRem < 10 && tRem > 0) {
+  	        NSLog(@"golog2 b20.3>: DCOIN STOP");
+		dcoinStopHTTPServer();
+		dcoinStop();
+	    }
+            [NSThread sleepForTimeInterval:1]; //wait for 1 sec
+        }
+        //#### background task ends
+
+        //Clean up code. Tell the system that we are done.
+        [application endBackgroundTask: background_task];
+        background_task = UIBackgroundTaskInvalid;
+    });
+}
+else
+{
+    NSLog(@"golog2: Multitasking Not Supported");
 }
 
-- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
-	[coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> context) {
-		// TODO(crawshaw): come up with a plan to handle animations.
-	} completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
-		UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
-		updateConfig((int)size.width, (int)size.height, orientation);
-	}];
+
+    self.vc = [[ViewController alloc] initWithNibName:nil bundle:nil];
+    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    self.window.rootViewController = self.vc;
+    self.window.backgroundColor = [UIColor greenColor];
+    [self.window makeKeyAndVisible];
+
+
+//    self.vc = [[ViewController alloc] initWithNibName:nil bundle:nil];
+//    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+//    self.window.rootViewController = self.vc;
+//    self.window.backgroundColor = [UIColor blueColor];
+//    [self.window makeKeyAndVisible];
+//    NSLog(@"golog2 didFinishLaunchingWithOptions ok");
+    // Override point for customization after application launch.
+
+//  NSURL *url = [NSURL URLWithString:@"http://www.google.com"];
+//  NSURLRequest *request = [NSURLRequest requestWithURL:url];
+//  [webView setScalesPageToFit:YES];
+//  [webView loadRequest:request];
+
+
+    return YES;
 }
 
-- (void)update {
-	//NSLog(@"golog2 update");
-	drawgl((GoUintptr)self.context);
+-(void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
+{
+
+  UIApplicationState state = [[UIApplication sharedApplication] applicationState];
+ // checking the state of the application
+  if (state == UIApplicationStateActive) 
+   {
+      // Application is running in the foreground
+      // Showing alert
+//      UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"3333" message:@"rr" delegate:self cancelButtonTitle:cancelButtonTitle otherButtonTitles:otherButtonTitle, nil];
+	UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Простой alert" message:@"Это простой UIAlertView, он просто показывает сообщение" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
+
+      [alert show];
+      [alert release];
+
+    //Playing sound
+   // NSURL *url = [NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/%@", [[NSBundle mainBundle] resourcePath],notification.soundName]];
+
+    //AVAudioPlayer *newAudioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:NULL];
+   // self.audioPlayer = newAudioPlayer;
+   // self.audioPlayer.numberOfLoops = -1;
+   // [self.audioPlayer play];
+   // [newAudioPlayer release];
+  }
+}  
+
+/*
+ - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+  {
+    [self.audioPlayer stop];
+  }
+*/
+							
+- (void)applicationWillResignActive:(UIApplication *)application
+{
+    NSLog(@"golog2 applicationWillResignActive");
+
+    // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
+    // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
 }
 
-#define TOUCH_TYPE_BEGIN 0 // touch.TypeBegin
-#define TOUCH_TYPE_MOVE  1 // touch.TypeMove
-#define TOUCH_TYPE_END   2 // touch.TypeEnd
-
-static void sendTouches(int change, NSSet* touches) {
-    NSLog(@"golog2 sendTouches");
-	CGFloat scale = [UIScreen mainScreen].scale;
-	for (UITouch* touch in touches) {
-		CGPoint p = [touch locationInView:touch.view];
-		sendTouch((GoUintptr)touch, (GoUintptr)change, p.x*scale, p.y*scale);
-	}
+- (void) sleep1:(NSTimer*)t {
+   NSLog(@"SLEEP ok");
 }
 
-- (void)touchesBegan:(NSSet*)touches withEvent:(UIEvent*)event {
-	sendTouches(TOUCH_TYPE_BEGIN, touches);
+- (void)applicationDidEnterBackground:(UIApplication *)application
+{
+    NSLog(@"golog2 applicationDidEnterBackground");
+    dcoinStopHTTPServer();
+//    dcoinTestSleep();
+    NSLog(@"golog2 toback ok");
+//    [NSTimer scheduledTimerWithTimeInterval:3.0
+//                               target:self
+//                               selector:@selector(sleep1:)
+//                               userInfo:nil
+//                               repeats:NO];
+//    NSLog(@"golog2 toback 2");
+
 }
 
-- (void)touchesMoved:(NSSet*)touches withEvent:(UIEvent*)event {
-	sendTouches(TOUCH_TYPE_MOVE, touches);
+- (void)applicationWillEnterForeground:(UIApplication *)application
+{
+    dcoinStartHTTPServer();
+    NSLog(@"golog2 applicationWillEnterForeground");
+
+    // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
 }
 
-- (void)touchesEnded:(NSSet*)touches withEvent:(UIEvent*)event {
-	sendTouches(TOUCH_TYPE_END, touches);
+- (void)applicationDidBecomeActive:(UIApplication *)application
+{
+    NSLog(@"golog2 applicationDidBecomeActive");
+    //dcoinStartHTTPServer();
+
+
+    // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
 }
+
+
+- (void) terminate1:(NSTimer*)t {
+   NSLog(@"TERM ok");
+}
+
+
+
+- (void)applicationWillTerminate:(UIApplication *)application
+{
+    NSLog(@"golog2 applicationWillTerminate!!!");
+    //dcoinStopHTTPServer();
+    NSLog(@"golog2 dcoinStop ++++++++++++++++++++++++++++++++++");
+    dcoinStop();
+    //dcoinTestSleep();
+    NSLog(@"golog2 applicationWillTerminate ok");
+    //[NSTimer scheduledTimerWithTimeInterval:5.0
+   //                            target:self
+   //                            selector:@selector(terminate1:)
+   //                            userInfo:nil
+   //                            repeats:NO];
+  //  NSLog(@"golog2 applicationWillTerminate 2");
+
+    // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+}
+
+
 @end
 
+
+@interface ViewController ()
+
+@end
+
+@implementation ViewController
+
+//- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+//{
+//    NSLog(@"golog2 initWithNibName");
+//    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+//    return self;
+//}
+
+//- (void)viewDidLayoutSubviews {
+//    webView.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
+//    NSLog(@"golog2 viewDidLayoutSubviews");
+
+//}
+
+- (void) openWV:(NSTimer*)t {
+
+    self.webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
+    NSMutableURLRequest * request =[NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"http://127.0.0.1:8089"]];
+    self.view = self.webView;
+    [self.webView loadRequest:request];
+}
+
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+
+    [NSTimer scheduledTimerWithTimeInterval:5.0
+                               target:self
+                               selector:@selector(openWV:)
+                               userInfo:nil
+                               repeats:NO];
+
+    [super viewDidLoad];
+
+    NSLog(@"golog2 viewDidLoad ok");
+
+}
+
+- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error
+{
+    NSLog(@"golog2 Failed to load with error :%@",[error debugDescription]);
+}    
+
+-(BOOL) webView:(UIWebView *)inWeb shouldStartLoadWithRequest:(NSURLRequest *)inRequest navigationType:(UIWebViewNavigationType)inType {
+    if ( inType == UIWebViewNavigationTypeLinkClicked ) {
+        [[UIApplication sharedApplication] openURL:[inRequest URL]];
+        return NO;
+    }
+
+    return YES;
+}
+
+/*
+#pragma - mark UIWebView Delegate Methods
+- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
+{
+    NSLog(@"Loading URL :%@",request.URL.absoluteString);
+    
+    //return FALSE; //to stop loading
+    return YES;
+}
+
+
+- (void)didReceiveMemoryWarning
+{
+    [super didReceiveMemoryWarning];
+    NSLog(@"golog2 didReceiveMemoryWarning");
+
+    // Dispose of any resources that can be recreated.
+}
+*/
+@end
+
+
+
+
 void runApp(void) {
-    NSLog(@"golog2 runApp");
+//	back2();
+        NSLog(@"golog2 runApp");
 	@autoreleasepool {
 		UIApplicationMain(0, nil, nil, NSStringFromClass([GoAppAppDelegate class]));
 	}
@@ -181,7 +374,8 @@ void setContext(void* context) {
 }
 
 char* GetFilesDir(void) {
-        NSArray *paths = NSSearchPathForDirectoriesInDomains (NSDocumentDirectory, NSUserDomainMask, YES);
+        NSArray *paths = NSSearchPathForDirectoriesInDomains
+                   (NSDocumentDirectory, NSUserDomainMask, YES);
         NSString *documentsDirectory = [paths objectAtIndex:0];
         return (char*)[documentsDirectory UTF8String];
 }
@@ -194,3 +388,14 @@ uint64_t threadID() {
 	return id;
 }
 
+//void logNS(char* text) {
+//    NSLog(@"golog: %s", text);
+//}
+
+
+void ShowMess1() {
+    NSLog(@"golog2 UIAlertView ++++++++############");
+	UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Простой alert" message:@"Это простой UIAlertView, он просто показывает сообщение" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
+	[alert show];
+	[alert release];
+}

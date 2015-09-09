@@ -8,14 +8,15 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.SystemClock;
 
-
 public class MainActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
-        
-	  Intent intent=new Intent("org.golang.app.MyService");  
+
+		Log.d("Go", "MainActivity onCreate");
+
+	  Intent intent=new Intent("org.golang.app.MyService");
 	  this.startService(intent);
 
 	  SystemClock.sleep(3000);
@@ -35,6 +36,7 @@ public class MainActivity extends Activity {
     
     protected void onStart(Bundle savedInstanceState) {
 
+		Log.d("Go", "MainActivity onStart");
 		try {
 			  Intent intent1 = new Intent(Intent.ACTION_VIEW);
 			  Uri data = Uri.parse("http://localhost:8089");

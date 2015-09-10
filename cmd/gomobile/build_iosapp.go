@@ -46,6 +46,8 @@ func goIOSBuild(pkg *build.Package) (map[string]bool, error) {
 		{tmpdir + "/main/Images.xcassets/AppIcon.appiconset/Contents.json", []byte(contentsJSON)},
 	}
 
+
+
 	for _, file := range files {
 		if err := mkdir(filepath.Dir(file.name)); err != nil {
 			return nil, err
@@ -60,7 +62,12 @@ func goIOSBuild(pkg *build.Package) (map[string]bool, error) {
 		}
 	}
 
-	armPath := filepath.Join(tmpdir, "arm")
+    icons := []string{"Icon-iOS7@2x.png", "Icon.png", "Icon72x72.png", "Icon72x72@2x.png", "Icon76x76.png", "Icon76x76@2x.png", "Icon@2x.png"}
+    for _, icon := range icons {
+      copyFile(tmpdir + "/main/Images.xcassets/AppIcon.appiconset/" + icon, pkg.Dir + "/" + icon);
+    }
+
+    armPath := filepath.Join(tmpdir, "arm")
 	if err := goBuild(src, darwinArmEnv, "-tags=ios", "-o="+armPath); err != nil {
 		return nil, err
 	}
@@ -122,7 +129,8 @@ func goIOSBuild(pkg *build.Package) (map[string]bool, error) {
 }
 
 func iosCopyAssets(pkg *build.Package, xcodeProjDir string) error {
-	dstAssets := xcodeProjDir + "/main/assets"
+
+    dstAssets := xcodeProjDir + "/main/assets"
 	if err := mkdir(dstAssets); err != nil {
 		return err
 	}
@@ -467,12 +475,12 @@ const contentsJSON = `{
     {
       "idiom" : "iphone",
       "size" : "29x29",
-      "scale" : "2x"
+      "scale" : "1x"
     },
     {
       "idiom" : "iphone",
       "size" : "29x29",
-      "scale" : "3x"
+      "scale" : "2x"
     },
     {
       "idiom" : "iphone",
@@ -480,19 +488,22 @@ const contentsJSON = `{
       "scale" : "2x"
     },
     {
+      "size" : "57x57",
       "idiom" : "iphone",
-      "size" : "40x40",
-      "scale" : "3x"
+      "filename" : "Icon.png",
+      "scale" : "1x"
     },
     {
+      "size" : "57x57",
       "idiom" : "iphone",
+      "filename" : "Icon@2x.png",
+      "scale" : "2x"
+    },
+    {
       "size" : "60x60",
-      "scale" : "2x"
-    },
-    {
       "idiom" : "iphone",
-      "size" : "60x60",
-      "scale" : "3x"
+      "filename" : "Icon-iOS7@2x.png",
+      "scale" : "2x"
     },
     {
       "idiom" : "ipad",
@@ -516,12 +527,36 @@ const contentsJSON = `{
     },
     {
       "idiom" : "ipad",
-      "size" : "76x76",
+      "size" : "50x50",
       "scale" : "1x"
     },
     {
       "idiom" : "ipad",
+      "size" : "50x50",
+      "scale" : "2x"
+    },
+    {
+      "size" : "72x72",
+      "idiom" : "ipad",
+      "filename" : "Icon72x72.png",
+      "scale" : "1x"
+    },
+    {
+      "size" : "72x72",
+      "idiom" : "ipad",
+      "filename" : "Icon72x72@2x.png",
+      "scale" : "2x"
+    },
+    {
       "size" : "76x76",
+      "idiom" : "ipad",
+      "filename" : "Icon76x76.png",
+      "scale" : "1x"
+    },
+    {
+      "size" : "76x76",
+      "idiom" : "ipad",
+      "filename" : "Icon76x76@2x.png",
       "scale" : "2x"
     }
   ],

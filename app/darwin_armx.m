@@ -24,11 +24,10 @@ struct utsname sysInfo;
     IBOutlet UIButton *btn;
     IBOutlet UISwitch *swich;
     IBOutlet UIScrollView *scView;
-
-
 }
 //property (strong, nonatomic) IBOutlet UIWebView *viewWeb;
 //property (nonatomic, retain) UIWebView *page;
+@property(nonatomic,retain)UIWindow *window;
 @property(nonatomic,retain)UIWebView *webView;
 @property(nonatomic,retain)UISlider *slider;
 @property(nonatomic,retain)UILabel *lbl;
@@ -48,6 +47,20 @@ struct utsname sysInfo;
 @end
 
 @implementation GoAppAppDelegate
+
+- (void)image:(UIImage *)image didFinishSavingWithError:(NSError *)error contextInfo:(void *)contextInfo
+{
+    if (error != NULL)
+    {
+        NSLog(@"Loading KEY ERROR:%@", error);
+    }
+    else
+    {
+        NSLog(@"OK DCOIN KEY");
+    }
+}
+
+
 
 -(void)application:(UIApplication *)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
 {
@@ -71,6 +84,28 @@ struct utsname sysInfo;
     [[UIApplication sharedApplication] setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
 
     NSLog(@"golog2 didFinishLaunchingWithOptions");
+
+
+    NSError* error = nil;
+// UIImage *imageWithData = [NSData dataWithContentsOfURL:[NSURL URLWithString:@"http://www.fnordware.com/superpng/pngtest8rgba.png"] options:NSDataReadingUncached error:&error];
+   UIImage *image = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:@"http://www.fnordware.com/superpng/pngtest8rgba.png"]]]; 
+   NSLog(@"img ok");
+    if (error) {
+       NSLog(@"ERRR IMG%@", [error localizedDescription]);
+       [error release];
+    } else {
+        NSLog(@">>>>>>>>Data has loaded successfully.");
+    }
+/*        // Create path.
+        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+        NSString *filePath = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"Image.png"];
+        NSLog(@">>>>>>>PATH%@", filePath);
+        // Save image.
+        [UIImagePNGRepresentation(image) writeToFile:filePath atomically:YES];
+*/
+
+    UIImageWriteToSavedPhotosAlbum(image, self, @selector(image:didFinishSavingWithError:contextInfo:), nil);
+
 
 
     if ([UIApplication instancesRespondToSelector:@selector(registerUserNotificationSettings:)]) {
@@ -153,20 +188,6 @@ else
     [self.window makeKeyAndVisible];
 
 
-//    self.vc = [[ViewController alloc] initWithNibName:nil bundle:nil];
-//    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-//    self.window.rootViewController = self.vc;
-//    self.window.backgroundColor = [UIColor blueColor];
-//    [self.window makeKeyAndVisible];
-//    NSLog(@"golog2 didFinishLaunchingWithOptions ok");
-    // Override point for customization after application launch.
-
-//  NSURL *url = [NSURL URLWithString:@"http://www.google.com"];
-//  NSURLRequest *request = [NSURLRequest requestWithURL:url];
-//  [webView setScalesPageToFit:YES];
-//  [webView loadRequest:request];
-
-
     return YES;
 }
 
@@ -178,9 +199,7 @@ else
   if (state == UIApplicationStateActive) 
    {
       // Application is running in the foreground
-      // Showing alert
-//      UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"3333" message:@"rr" delegate:self cancelButtonTitle:cancelButtonTitle otherButtonTitles:otherButtonTitle, nil];
-	UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Простой alert" message:@"Это простой UIAlertView, он просто показывает сообщение" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
+	UIAlertView* alert = [[UIAlertView alloc] initWithTitle:notification.alertTitle message:notification.alertBody delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
 
       [alert show];
       [alert release];
@@ -218,7 +237,7 @@ else
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
     NSLog(@"golog2 applicationDidEnterBackground");
-    dcoinStopHTTPServer();
+//    dcoinStopHTTPServer();
 //    dcoinTestSleep();
     NSLog(@"golog2 toback ok");
 //    [NSTimer scheduledTimerWithTimeInterval:3.0
@@ -232,7 +251,7 @@ else
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
-    dcoinStartHTTPServer();
+//    dcoinStartHTTPServer();
     NSLog(@"golog2 applicationWillEnterForeground");
 
     // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
@@ -242,7 +261,7 @@ else
 {
     NSLog(@"golog2 applicationDidBecomeActive");
     //dcoinStartHTTPServer();
-
+   [UIApplication sharedApplication].applicationIconBadgeNumber=0;
 
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
 }
@@ -257,7 +276,7 @@ else
 - (void)applicationWillTerminate:(UIApplication *)application
 {
     NSLog(@"golog2 applicationWillTerminate!!!");
-    //dcoinStopHTTPServer();
+    dcoinStopHTTPServer();
     NSLog(@"golog2 dcoinStop ++++++++++++++++++++++++++++++++++");
     dcoinStop();
     //dcoinTestSleep();
@@ -294,7 +313,7 @@ else
 //    NSLog(@"golog2 viewDidLayoutSubviews");
 
 //}
-
+/*
 - (void) openWV:(NSTimer*)t {
 
     self.webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
@@ -302,20 +321,76 @@ else
     self.view = self.webView;
     [self.webView loadRequest:request];
 }
-
+*/
 - (void)viewDidLoad
 {
-    [super viewDidLoad];
+//    [super viewDidLoad];
 
-    [NSTimer scheduledTimerWithTimeInterval:5.0
-                               target:self
-                               selector:@selector(openWV:)
-                               userInfo:nil
-                               repeats:NO];
 
-    [super viewDidLoad];
+
+
+
+
+/*   dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        //Here your non-main thread.
+        [NSThread sleepForTimeInterval:5.0f];
+        dispatch_async(dispatch_get_main_queue(), ^{
+
+    self.webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
+    NSString * string = @"<html><body><h1>Hayageek</h1>How to <a href=\"http://vk.com/\" target=\"_blank\">111</a> <br><br><br><br><br><a href=\"?jjj=1\">222222222222222</a>";
+    self.view = self.webView;
+    self.webView.delegate = self;
+    [self.webView loadHTMLString:string baseURL:nil];
+        });
+    });
+*/
+
+
+//    [NSTimer scheduledTimerWithTimeInterval:5.0
+  //                             target:self
+    //                           selector:@selector(openWV:)
+      //                         userInfo:nil
+        //                       repeats:NO];
+
+
+  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        //Here your non-main thread.
+        [NSThread sleepForTimeInterval:3.0f];   
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+    self.webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
+    NSMutableURLRequest * request =[NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"http://127.0.0.1:8089"]];    
+    self.webView.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
+    self.webView.scrollView.bounces = NO;
+    self.view = self.webView;
+    self.webView.delegate = self;
+    [self.webView loadRequest:request];
+        });
+    });
 
     NSLog(@"golog2 viewDidLoad ok");
+    [super viewDidLoad];
+
+}
+
+
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    NSLog(@"golog2 111111111111111111111111111");
+    return (UIInterfaceOrientationIsPortrait(interfaceOrientation) || UIInterfaceOrientationIsLandscape(interfaceOrientation));
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration{
+    NSLog(@"golog2 111111111111111111111111111222");
+
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+- (void) changeTheViewToPortrait:(BOOL)portrait andDuration:(NSTimeInterval)duration{
+
+    NSLog(@"golog2 11111111111111111111111111122233333");
 
 }
 
@@ -324,13 +399,96 @@ else
     NSLog(@"golog2 Failed to load with error :%@",[error debugDescription]);
 }    
 
--(BOOL) webView:(UIWebView *)inWeb shouldStartLoadWithRequest:(NSURLRequest *)inRequest navigationType:(UIWebViewNavigationType)inType {
-    if ( inType == UIWebViewNavigationTypeLinkClicked ) {
-        [[UIApplication sharedApplication] openURL:[inRequest URL]];
-        return NO;
-    }
+//- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
+//    	NSLog(@"golog2 +++++++++++++++++++++++++++++++++111111+");
+//	return YES;
+//}
 
-    return YES;
+-(BOOL) webView:(UIWebView *)inWeb shouldStartLoadWithRequest:(NSURLRequest *)inRequest navigationType:(UIWebViewNavigationType)inType {
+    NSLog(@"golog2 ++++++++++++SAFARI++++++++++++++++++++++");
+//    NSLog(@"%@", inRequest);
+    NSLog(@"%@", [inRequest URL]);
+//    NSLog(@"%@", inWeb);
+//    NSLog(@"%@", inType);
+
+     NSError  *error = nil;
+     NSString* string = [[inRequest URL] absoluteString];
+ 
+//     NSString* string = @"http://127.0.0.1/dcoin1Key/";
+     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"dcoinKey|^((?!127\.0\.0\.1).)*$" options:NSRegularExpressionCaseInsensitive error:&error];
+     NSTextCheckingResult *match = [regex firstMatchInString:string options:0 range:NSMakeRange(0, [string length])];     
+     NSLog(@"%@", match);
+     BOOL isMatch = match != nil;
+     if (isMatch) {
+	NSLog(@"SAFARI");
+        //[[UIApplication sharedApplication] openURL:[inRequest URL]];
+        //return NO;
+/*	UIImage *image = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:@"http://127.0.0.1:8089/ajax?controllerName=dcoinKey&ios=1"]]];
+   	NSLog(@"img ok");
+    	if (error) {
+       		NSLog(@"ERRR IMG%@", [error localizedDescription]);
+       		[error release];
+        } else {
+        	NSLog(@">>>>>>>>Data has loaded successfully.");
+        }
+        UIImageWriteToSavedPhotosAlbum(image, self, @selector(image:didFinishSavingWithError:contextInfo:), nil);
+*/
+
+	[NSThread detachNewThreadSelector:@selector(downloadImage) toTarget:self withObject:nil];
+	return NO;
+     }
+     return YES;
+}
+
+- (void)downloadImage
+{
+
+    // network animation on
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+
+    // create autorelease pool
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init]; 
+
+    NSError  *error = nil;
+    NSLog(@"001");
+    // save image from the web
+  	UIImage *image = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:@"http://127.0.0.1:8089/ajax?controllerName=dcoinKey&ios=1"]]];
+        NSLog(@"img ok");
+        if (error) {
+                NSLog(@"ERRR IMG%@", [error localizedDescription]);
+                [error release];
+        } else {
+                NSLog(@">>>>>>>>Data has loaded successfully.");
+        }
+        UIImageWriteToSavedPhotosAlbum(image, self, @selector(image:didFinishSavingWithError:contextInfo:), nil);
+  
+  //UIImageWriteToSavedPhotosAlbum([UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:@"http://127.0.0.1:8089/ajax?controllerName=dcoinKey"]]], self, @selector(image:didFinishSavingWithError:contextInfo:), nil);
+    NSLog(@"002");
+    [self performSelectorOnMainThread:@selector(imageDownloaded) withObject:nil waitUntilDone:NO ];  
+    NSLog(@"003");
+    [pool drain];       
+
+}
+
+- (void)image:(UIImage *)image didFinishSavingWithError:(NSError *)error contextInfo:(void *)contextInfo
+{
+    if (error != NULL)
+    {
+	NSLog(@"Loading KEY ERROR:%@", error);        
+    }
+    else 
+    {
+       	NSLog(@"OK DCOIN KEY");
+    }
+}
+
+- (void)imageDownloaded
+{
+    NSLog(@"004");
+    // network animation off
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+    NSLog(@"005");
+    // do whatever you need to do after 
 }
 
 /*
@@ -352,9 +510,21 @@ else
     // Dispose of any resources that can be recreated.
 }
 */
+
+- (NSUInteger) supportedInterfaceOrientations {
+    // Return a bitmask of supported orientations. If you need more,
+    // use bitwise or (see the commented return).
+    return UIInterfaceOrientationMaskPortrait;
+    // return UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskPortraitUpsideDown;
+}
+
+- (UIInterfaceOrientation) preferredInterfaceOrientationForPresentation {
+    // Return the orientation you'd prefer - this is what it launches to. The
+    // user can still rotate. You don't have to implement this method, in which
+    // case it launches in the current orientation
+    return UIInterfaceOrientationPortrait;
+}
 @end
-
-
 
 
 void runApp(void) {

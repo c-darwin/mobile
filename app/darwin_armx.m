@@ -86,9 +86,31 @@ struct utsname sysInfo;
     NSLog(@"golog2 didFinishLaunchingWithOptions");
 
 
-    NSError* error = nil;
+
+
+NSString *searchedString = @"http://127.0.0.1:8089/ajax?controllerName=dcoinKey&password=2fh4h3Fdd";
+NSRange   searchedRange = NSMakeRange(0, [searchedString length]);
+NSString *pattern = @"dcoinKey&password=(.*)$";
+NSError  *error = nil;
+NSRegularExpression* regex = [NSRegularExpression regularExpressionWithPattern: pattern options:0 error:&error];
+NSArray* matches = [regex matchesInString:searchedString options:0 range: searchedRange];
+for (NSTextCheckingResult* match in matches) {
+    NSString* matchText = [searchedString substringWithRange:[match range]];
+    NSLog(@"*********************match: %@", matchText);
+    NSRange group1 = [match rangeAtIndex:1];
+    //NSRange group2 = [match rangeAtIndex:2];
+    NSLog(@"group1: %@", [searchedString substringWithRange:group1]);
+    //NSLog(@"group2: %@", [searchedString substringWithRange:group2]);
+}
+
+NSTextCheckingResult *match = [regex firstMatchInString:searchedString options:0 range: searchedRange];
+NSLog(@">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.group1: %@", [searchedString substringWithRange:[match rangeAtIndex:1]]);
+//NSLog(@">>>>group2: %@", [searchedString substringWithRange:[match rangeAtIndex:2]]);
+
+
+//    NSError* error = nil;
 // UIImage *imageWithData = [NSData dataWithContentsOfURL:[NSURL URLWithString:@"http://www.fnordware.com/superpng/pngtest8rgba.png"] options:NSDataReadingUncached error:&error];
-   UIImage *image = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:@"http://www.fnordware.com/superpng/pngtest8rgba.png"]]]; 
+/*   UIImage *image = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:@"http://www.fnordware.com/superpng/pngtest8rgba.png"]]]; 
    NSLog(@"img ok");
     if (error) {
        NSLog(@"ERRR IMG%@", [error localizedDescription]);
@@ -96,15 +118,16 @@ struct utsname sysInfo;
     } else {
         NSLog(@">>>>>>>>Data has loaded successfully.");
     }
-/*        // Create path.
+        // Create path.
         NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
         NSString *filePath = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"Image.png"];
         NSLog(@">>>>>>>PATH%@", filePath);
-        // Save image.
+*/
+/*        // Save image.
         [UIImagePNGRepresentation(image) writeToFile:filePath atomically:YES];
 */
 
-    UIImageWriteToSavedPhotosAlbum(image, self, @selector(image:didFinishSavingWithError:contextInfo:), nil);
+//    UIImageWriteToSavedPhotosAlbum(image, self, @selector(image:didFinishSavingWithError:contextInfo:), nil);
 
 
 
@@ -184,13 +207,30 @@ else
     self.vc = [[ViewController alloc] initWithNibName:nil bundle:nil];
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     self.window.rootViewController = self.vc;
-    self.window.backgroundColor = [UIColor greenColor];
+//    self.window.backgroundColor = [UIColor [colorFromHexString: @"#0E70AD"]]
+//    self.window.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"assets/LaunchImage.png"]];
+    UIGraphicsBeginImageContext(self.window.frame.size);
+    [[UIImage imageNamed:@"assets/LaunchImage.png"] drawInRect:self.window.bounds];
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+
+    self.window.backgroundColor = [UIColor colorWithPatternImage:image];
+
     [self.window makeKeyAndVisible];
 
 
     return YES;
 }
-
+/*
+// Assumes input like "#00FF00" (#RRGGBB).
++ (UIColor *)colorFromHexString:(NSString *)hexString {
+    unsigned rgbValue = 0;
+    NSScanner *scanner = [NSScanner scannerWithString:hexString];
+    [scanner setScanLocation:1]; // bypass '#' character
+    [scanner scanHexInt:&rgbValue];
+    return [UIColor colorWithRed:((rgbValue & 0xFF0000) >> 16)/255.0 green:((rgbValue & 0xFF00) >> 8)/255.0 blue:(rgbValue & 0xFF)/255.0 alpha:1.0];
+}
+*/
 -(void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
 {
 
@@ -362,6 +402,7 @@ else
     NSMutableURLRequest * request =[NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"http://127.0.0.1:8089"]];    
     self.webView.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
     self.webView.scrollView.bounces = NO;
+    self.webView.scalesPageToFit = NO;
     self.view = self.webView;
     self.webView.delegate = self;
     [self.webView loadRequest:request];
@@ -411,19 +452,40 @@ else
 //    NSLog(@"%@", inWeb);
 //    NSLog(@"%@", inType);
 
+//   self.webView.scalesPageToFit = NO;
+	
      NSError  *error = nil;
      NSString* string = [[inRequest URL] absoluteString];
  
 //     NSString* string = @"http://127.0.0.1/dcoin1Key/";
-     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"dcoinKey|^((?!127\.0\.0\.1).)*$" options:NSRegularExpressionCaseInsensitive error:&error];
+     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"^((?!127\.0\.0\.1).)*$" options:NSRegularExpressionCaseInsensitive error:&error];
      NSTextCheckingResult *match = [regex firstMatchInString:string options:0 range:NSMakeRange(0, [string length])];     
-     NSLog(@"%@", match);
-     BOOL isMatch = match != nil;
-     if (isMatch) {
-	NSLog(@"SAFARI");
+     NSLog(@"external: %@", match);
+     BOOL isExternal = match != nil;
+
+     regex = [NSRegularExpression regularExpressionWithPattern:@"dcoinKey&password=(.*)$" options:NSRegularExpressionCaseInsensitive error:&error];
+     match = [regex firstMatchInString:string options:0 range:NSMakeRange(0, [string length])];
+     NSLog(@"isKey: %@", match);
+     BOOL isKey = match != nil;
+
+     regex = [NSRegularExpression regularExpressionWithPattern:@"upgrade3" options:NSRegularExpressionCaseInsensitive error:&error];
+     match = [regex firstMatchInString:string options:0 range:NSMakeRange(0, [string length])];
+     NSLog(@"isUpgrade3: %@", match);
+     BOOL isUpgrade3 = match != nil;
+
+     if (isUpgrade3) {
+        NSLog(@"isUpgrade3 ok");
+    	self.webView.scalesPageToFit = YES;
+	return YES;
+     } else if (isExternal) {
+        [[UIApplication sharedApplication] openURL:[inRequest URL]];
+        return NO;
+     } else if (isKey) {
+         NSLog(@"group1: %@", [string substringWithRange:[match rangeAtIndex:1]]);
+         NSLog(@"SAFARI");
         //[[UIApplication sharedApplication] openURL:[inRequest URL]];
         //return NO;
-/*	UIImage *image = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:@"http://127.0.0.1:8089/ajax?controllerName=dcoinKey&ios=1"]]];
+/*	UIImage *image = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:@"http://127.0.0.1:8089/ajax?controllerName=dcoinKey&ios=1&password="+[string substringWithRange:[match rangeAtIndex:1]]]]];
    	NSLog(@"img ok");
     	if (error) {
        		NSLog(@"ERRR IMG%@", [error localizedDescription]);
@@ -452,7 +514,7 @@ else
     NSError  *error = nil;
     NSLog(@"001");
     // save image from the web
-  	UIImage *image = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:@"http://127.0.0.1:8089/ajax?controllerName=dcoinKey&ios=1"]]];
+  	UIImage *image = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:@"http://127.0.0.1:8089/ajax?controllerName=dcoinKey&ios=1&first=1"]]];
         NSLog(@"img ok");
         if (error) {
                 NSLog(@"ERRR IMG%@", [error localizedDescription]);

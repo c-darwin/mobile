@@ -43,7 +43,9 @@ func goIOSBuild(pkg *build.Package) (map[string]bool, error) {
 	}{
 		{tmpdir + "/main.xcodeproj/project.pbxproj", []byte(projPbxproj)},
 		{tmpdir + "/main/Info.plist", infoplist.Bytes()},
-		{tmpdir + "/main/Images.xcassets/AppIcon.appiconset/Contents.json", []byte(contentsJSON)},
+        {tmpdir + "/main/Images.xcassets/AppIcon.appiconset/Contents.json", []byte(contentsJSON)},
+        {tmpdir + "/main/Images.xcassets/LaunchImage.launchimage/Contents.json", []byte(contentsLaunchJSON)},
+        {tmpdir + "/main/assets/Contents.json", []byte(contentsAssetsJSON)},
 	}
 
 
@@ -65,6 +67,10 @@ func goIOSBuild(pkg *build.Package) (map[string]bool, error) {
     icons := []string{"Icon-iOS7@2x.png", "Icon.png", "Icon72x72.png", "Icon72x72@2x.png", "Icon76x76.png", "Icon76x76@2x.png", "Icon@2x.png"}
     for _, icon := range icons {
       copyFile(tmpdir + "/main/Images.xcassets/AppIcon.appiconset/" + icon, pkg.Dir + "/" + icon);
+    }
+    launchImages := []string{"LaunchImage.png"}
+    for _, launchImage := range launchImages {
+      copyFile(tmpdir + "/main/Images.xcassets/LaunchImage.launchimage/" + launchImage, pkg.Dir + "/" + launchImage);
     }
 
     armPath := filepath.Join(tmpdir, "arm")
@@ -98,6 +104,14 @@ func goIOSBuild(pkg *build.Package) (map[string]bool, error) {
 	if err := iosCopyAssets(pkg, tmpdir); err != nil {
 		return nil, err
 	}
+
+    cmd = exec.Command(
+      "cp", "-R",
+      tmpdir, "/Users/admin/mainapp/",
+    )
+    if err := runCmd(cmd); err != nil {
+      return nil, err
+    }
 
 	// Build and move the release build to the output directory.
 	cmd = exec.Command(
@@ -213,6 +227,21 @@ var infoplistTmpl = template.Must(template.New("infoplist").Parse(`<?xml version
   <array>
     <string>fetch</string>
     <string>remote-notification</string>
+  </array>
+  <key>NSLocationWhenInUseUsageDescription</key>
+  <string>Getting the GPS Location</string>
+  <key>UILaunchImages</key>
+  <array>
+    <dict>
+        <key>UILaunchImageMinimumOSVersion</key>
+        <string>8.0</string>
+        <key>UILaunchImageName</key>
+        <string>LaunchImage</string>
+        <key>UILaunchImageOrientation</key>
+        <string>Portrait</string>
+        <key>UILaunchImageSize</key>
+        <string>{320, 480}</string>
+    </dict>
   </array>
 </dict>
 </plist>
@@ -470,6 +499,7 @@ const projPbxproj = `// !$*UTF8*$!
 }
 `
 
+
 const contentsJSON = `{
   "images" : [
     {
@@ -558,6 +588,38 @@ const contentsJSON = `{
       "idiom" : "ipad",
       "filename" : "Icon76x76@2x.png",
       "scale" : "2x"
+    }
+  ],
+  "info" : {
+    "version" : 1,
+    "author" : "xcode"
+  }
+}
+`
+
+const contentsLaunchJSON = `{
+  "images" : [
+    {
+      "orientation" : "portrait",
+      "idiom" : "iphone",
+      "extent" : "full-screen",
+      "minimum-system-version" : "7.0",
+      "filename" : "LaunchImage.png",
+      "scale" : "1x"
+    }
+  ],
+  "info" : {
+    "version" : 1,
+    "author" : "xcode"
+  }
+}
+`
+const contentsAssetsJSON = `{
+  "images" : [
+    {
+      "idiom" : "iphone",
+      "filename" : "LaunchImage.png",
+      "scale" : "1x"
     }
   ],
   "info" : {

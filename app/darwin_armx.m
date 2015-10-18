@@ -62,6 +62,8 @@ struct utsname sysInfo;
 
 
 
+
+/*
 -(void)application:(UIApplication *)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
 {
         NSLog(@"golog2 performFetchWithCompletionHandler");
@@ -78,6 +80,8 @@ struct utsname sysInfo;
         }
         completionHandler(UIBackgroundFetchResultNewData); 
 }
+*/
+
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
@@ -213,8 +217,8 @@ else
     [[UIImage imageNamed:@"assets/LaunchImage.png"] drawInRect:self.window.bounds];
     UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
-
     self.window.backgroundColor = [UIColor colorWithPatternImage:image];
+
 
     [self.window makeKeyAndVisible];
 
@@ -364,9 +368,7 @@ else
 */
 - (void)viewDidLoad
 {
-//    [super viewDidLoad];
-
-
+///    [super viewDidLoad];
 
 
 
@@ -463,6 +465,11 @@ else
      NSLog(@"external: %@", match);
      BOOL isExternal = match != nil;
 
+     regex = [NSRegularExpression regularExpressionWithPattern:@"FormExPs=mobile" options:NSRegularExpressionCaseInsensitive error:&error];
+     match = [regex firstMatchInString:string options:0 range:NSMakeRange(0, [string length])];
+     NSLog(@"isMobileGate: %@", match);
+     BOOL isMobileGate = match != nil;
+
      regex = [NSRegularExpression regularExpressionWithPattern:@"dcoinKey&password=(.*)$" options:NSRegularExpressionCaseInsensitive error:&error];
      match = [regex firstMatchInString:string options:0 range:NSMakeRange(0, [string length])];
      NSLog(@"isKey: %@", match);
@@ -473,12 +480,25 @@ else
      NSLog(@"isUpgrade3: %@", match);
      BOOL isUpgrade3 = match != nil;
 
+     regex = [NSRegularExpression regularExpressionWithPattern:@"upgrade4" options:NSRegularExpressionCaseInsensitive error:&error];
+     match = [regex firstMatchInString:string options:0 range:NSMakeRange(0, [string length])];
+     NSLog(@"isUpgrade4: %@", match);
+     BOOL isUpgrade4 = match != nil;
+
+
      if (isUpgrade3) {
         NSLog(@"isUpgrade3 ok");
     	self.webView.scalesPageToFit = YES;
 	return YES;
+     } else if (isUpgrade4) {
+        NSLog(@"isUpgrade4 ok");
+        self.webView.scalesPageToFit = NO;
+        return YES;
+     } else if (isMobileGate) {
+       // [[UIApplication sharedApplication] openURL:[inRequest URL]];
+        return YES;
      } else if (isExternal) {
-        [[UIApplication sharedApplication] openURL:[inRequest URL]];
+        [[UIApplication sharedApplication] openURL:inRequest.URL];
         return NO;
      } else if (isKey) {
          NSLog(@"group1: %@", [string substringWithRange:[match rangeAtIndex:1]]);

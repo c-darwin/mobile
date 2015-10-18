@@ -465,10 +465,10 @@ else
      NSLog(@"external: %@", match);
      BOOL isExternal = match != nil;
 
-     regex = [NSRegularExpression regularExpressionWithPattern:@"FormExPs=mobile" options:NSRegularExpressionCaseInsensitive error:&error];
+     /*regex = [NSRegularExpression regularExpressionWithPattern:@"FormExPs=mobile" options:NSRegularExpressionCaseInsensitive error:&error];
      match = [regex firstMatchInString:string options:0 range:NSMakeRange(0, [string length])];
      NSLog(@"isMobileGate: %@", match);
-     BOOL isMobileGate = match != nil;
+     BOOL isMobileGate = match != nil;*/
 
      regex = [NSRegularExpression regularExpressionWithPattern:@"dcoinKey&password=(.*)$" options:NSRegularExpressionCaseInsensitive error:&error];
      match = [regex firstMatchInString:string options:0 range:NSMakeRange(0, [string length])];
@@ -494,14 +494,14 @@ else
         NSLog(@"isUpgrade4 ok");
         self.webView.scalesPageToFit = NO;
         return YES;
-     } else if (isMobileGate) {
+     /*} else if (isMobileGate) {
         NSLog(@"isMobileGate ok");
        // [[UIApplication sharedApplication] openURL:[inRequest URL]];
-        return YES;
+        return YES;*/
      } else if (isExternal) {
         NSLog(@"isExternal %@", [inRequest URL]);
-        NSString* URL = @"http://tmp-e.dcoin.club/go.php?FormExPs=mobile&FormExAmount=1&FormDC=72&FormToken=ZyCIpKnpEoUXrl6nNzDo3r5XJaDLsC";
-        [[UIApplication sharedApplication] openURL:URL];
+        //NSString* URL = @"http://tmp-e.dcoin.club/go.php?FormExPs=mobile&FormExAmount=1&FormDC=72&FormToken=ZyCIpKnpEoUXrl6nNzDo3r5XJaDLsC";
+        [[UIApplication sharedApplication] openURL:[inRequest URL]];
         return NO;
      } else if (isKey) {
          NSLog(@"group1: %@", [string substringWithRange:[match rangeAtIndex:1]]);

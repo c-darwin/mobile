@@ -50,6 +50,11 @@ func dcoinStop(){
 	go dcoin.Stop();
 }
 
+//export dcoinStopHTTPServer
+func dcoinStopHTTPServer(){
+	go dcoin.StopHTTPServer();
+}
+
 func init() {
 	// Lock the goroutine responsible for initialization to an OS thread.
 	// This means the goroutine running main (and calling the run function

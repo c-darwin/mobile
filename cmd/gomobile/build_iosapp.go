@@ -5,179 +5,179 @@
 package main
 
 import (
-	"bytes"
-	"fmt"
-	"go/build"
-	"io/ioutil"
-	"os"
-	"os/exec"
-	"path"
-	"path/filepath"
-	"strings"
-	"text/template"
+  "bytes"
+  "fmt"
+  "go/build"
+  "io/ioutil"
+  "os"
+  "os/exec"
+  "path"
+  "path/filepath"
+  "strings"
+  "text/template"
 )
 
 func goIOSBuild(pkg *build.Package) (map[string]bool, error) {
-	src := pkg.ImportPath
-	if buildO != "" && !strings.HasSuffix(buildO, ".app") {
-		return nil, fmt.Errorf("-o must have an .app for target=ios")
-	}
+  src := pkg.ImportPath
+  if buildO != "" && !strings.HasSuffix(buildO, ".app") {
+    return nil, fmt.Errorf("-o must have an .app for target=ios")
+  }
 
-	productName := rfc1034Label(path.Base(pkg.ImportPath))
-	if productName == "" {
-		productName = "ProductName" // like xcode.
-	}
+  productName := rfc1034Label(path.Base(pkg.ImportPath))
+  if productName == "" {
+    productName = "ProductName" // like xcode.
+  }
 
-	infoplist := new(bytes.Buffer)
-	if err := infoplistTmpl.Execute(infoplist, infoplistTmplData{
-		// TODO: better bundle id.
-		BundleID: "org.golang.todo." + productName,
-		Name:     strings.Title(path.Base(pkg.ImportPath)),
-	}); err != nil {
-		return nil, err
-	}
+  infoplist := new(bytes.Buffer)
+  if err := infoplistTmpl.Execute(infoplist, infoplistTmplData{
+    // TODO: better bundle id.
+    BundleID: "org.golang.todo." + productName,
+    Name:     strings.Title(path.Base(pkg.ImportPath)),
+  }); err != nil {
+    return nil, err
+  }
 
-	files := []struct {
-		name     string
-		contents []byte
-	}{
-		{tmpdir + "/main.xcodeproj/project.pbxproj", []byte(projPbxproj)},
-		{tmpdir + "/main/Info.plist", infoplist.Bytes()},
-        {tmpdir + "/main/Images.xcassets/AppIcon.appiconset/Contents.json", []byte(contentsJSON)},
-        {tmpdir + "/main/Images.xcassets/LaunchImage.launchimage/Contents.json", []byte(contentsLaunchJSON)},
-        {tmpdir + "/main/assets/Contents.json", []byte(contentsAssetsJSON)},
-	}
+  files := []struct {
+    name     string
+    contents []byte
+  }{
+    {tmpdir + "/main.xcodeproj/project.pbxproj", []byte(projPbxproj)},
+    {tmpdir + "/main/Info.plist", infoplist.Bytes()},
+    {tmpdir + "/main/Images.xcassets/AppIcon.appiconset/Contents.json", []byte(contentsJSON)},
+    {tmpdir + "/main/Images.xcassets/LaunchImage.launchimage/Contents.json", []byte(contentsLaunchJSON)},
+    {tmpdir + "/main/assets/Contents.json", []byte(contentsAssetsJSON)},
+  }
 
 
 
-	for _, file := range files {
-		if err := mkdir(filepath.Dir(file.name)); err != nil {
-			return nil, err
-		}
-		if buildX {
-			printcmd("echo \"%s\" > %s", file.contents, file.name)
-		}
-		if !buildN {
-			if err := ioutil.WriteFile(file.name, file.contents, 0644); err != nil {
-				return nil, err
-			}
-		}
-	}
-
-    icons := []string{"Icon-iOS7@2x.png", "Icon.png", "Icon72x72.png", "Icon72x72@2x.png", "Icon76x76.png", "Icon76x76@2x.png", "Icon@2x.png"}
-    for _, icon := range icons {
-      copyFile(tmpdir + "/main/Images.xcassets/AppIcon.appiconset/" + icon, pkg.Dir + "/" + icon);
-    }
-    launchImages := []string{"LaunchImage.png"}
-    for _, launchImage := range launchImages {
-      copyFile(tmpdir + "/main/Images.xcassets/LaunchImage.launchimage/" + launchImage, pkg.Dir + "/" + launchImage);
-    }
-
-    armPath := filepath.Join(tmpdir, "arm")
-	if err := goBuild(src, darwinArmEnv, "-tags=ios", "-o="+armPath); err != nil {
-		return nil, err
-	}
-	nmpkgs, err := extractPkgs(darwinArmNM, armPath)
-	if err != nil {
-		return nil, err
-	}
-
-	arm64Path := filepath.Join(tmpdir, "arm64")
-	if err := goBuild(src, darwinArm64Env, "-tags=ios", "-o="+arm64Path); err != nil {
-		return nil, err
-	}
-
-	// Apple requires builds to target both darwin/arm and darwin/arm64.
-	// We are using lipo tool to build multiarchitecture binaries.
-	// TODO(jbd): Investigate the new announcements about iO9's fat binary
-	// size limitations are breaking this feature.
-	cmd := exec.Command(
-		"xcrun", "lipo",
-		"-create", armPath, arm64Path,
-		"-o", filepath.Join(tmpdir, "main/main"),
-	)
-	if err := runCmd(cmd); err != nil {
-		return nil, err
-	}
-
-	// TODO(jbd): Set the launcher icon.
-	if err := iosCopyAssets(pkg, tmpdir); err != nil {
-		return nil, err
-	}
-
-    cmd = exec.Command(
-      "cp", "-R",
-      tmpdir, "/Users/admin/mainapp/",
-    )
-    if err := runCmd(cmd); err != nil {
+  for _, file := range files {
+    if err := mkdir(filepath.Dir(file.name)); err != nil {
       return nil, err
     }
+    if buildX {
+      printcmd("echo \"%s\" > %s", file.contents, file.name)
+    }
+    if !buildN {
+      if err := ioutil.WriteFile(file.name, file.contents, 0644); err != nil {
+        return nil, err
+      }
+    }
+  }
 
-	// Build and move the release build to the output directory.
-	cmd = exec.Command(
-		"xcrun", "xcodebuild",
-		"-configuration", "Release",
-		"-project", tmpdir+"/main.xcodeproj",
-	)
-	if err := runCmd(cmd); err != nil {
-		return nil, err
-	}
+  icons := []string{"Icon-iOS7@2x.png", "Icon.png", "Icon72x72.png", "Icon72x72@2x.png", "Icon76x76.png", "Icon76x76@2x.png", "Icon@2x.png"}
+  for _, icon := range icons {
+    copyFile(tmpdir + "/main/Images.xcassets/AppIcon.appiconset/" + icon, pkg.Dir + "/" + icon);
+  }
+  launchImages := []string{"LaunchImage.png"}
+  for _, launchImage := range launchImages {
+    copyFile(tmpdir + "/main/Images.xcassets/LaunchImage.launchimage/" + launchImage, pkg.Dir + "/" + launchImage);
+  }
 
-	// TODO(jbd): Fallback to copying if renaming fails.
-	if buildO == "" {
-		buildO = path.Base(pkg.ImportPath) + ".app"
-	}
-	if buildX {
-		printcmd("mv %s %s", tmpdir+"/build/Release-iphoneos/main.app", buildO)
-	}
-	if !buildN {
-		// if output already exists, remove.
-		if err := os.RemoveAll(buildO); err != nil {
-			return nil, err
-		}
-		if err := os.Rename(tmpdir+"/build/Release-iphoneos/main.app", buildO); err != nil {
-			return nil, err
-		}
-	}
-	return nmpkgs, nil
+  armPath := filepath.Join(tmpdir, "arm")
+  if err := goBuild(src, darwinArmEnv, "-tags=ios", "-o="+armPath); err != nil {
+    return nil, err
+  }
+  nmpkgs, err := extractPkgs(darwinArmNM, armPath)
+  if err != nil {
+    return nil, err
+  }
+
+  arm64Path := filepath.Join(tmpdir, "arm64")
+  if err := goBuild(src, darwinArm64Env, "-tags=ios", "-o="+arm64Path); err != nil {
+    return nil, err
+  }
+
+  // Apple requires builds to target both darwin/arm and darwin/arm64.
+  // We are using lipo tool to build multiarchitecture binaries.
+  // TODO(jbd): Investigate the new announcements about iO9's fat binary
+  // size limitations are breaking this feature.
+  cmd := exec.Command(
+    "xcrun", "lipo",
+    "-create", armPath, arm64Path,
+    "-o", filepath.Join(tmpdir, "main/main"),
+  )
+  if err := runCmd(cmd); err != nil {
+    return nil, err
+  }
+
+  // TODO(jbd): Set the launcher icon.
+  if err := iosCopyAssets(pkg, tmpdir); err != nil {
+    return nil, err
+  }
+
+  cmd = exec.Command(
+    "cp", "-R",
+    tmpdir, "/Users/admin/mainapp/",
+  )
+  if err := runCmd(cmd); err != nil {
+    return nil, err
+  }
+
+  // Build and move the release build to the output directory.
+  cmd = exec.Command(
+    "xcrun", "xcodebuild",
+    "-configuration", "Release",
+    "-project", tmpdir+"/main.xcodeproj",
+  )
+  if err := runCmd(cmd); err != nil {
+    return nil, err
+  }
+
+  // TODO(jbd): Fallback to copying if renaming fails.
+  if buildO == "" {
+    buildO = path.Base(pkg.ImportPath) + ".app"
+  }
+  if buildX {
+    printcmd("mv %s %s", tmpdir+"/build/Release-iphoneos/main.app", buildO)
+  }
+  if !buildN {
+    // if output already exists, remove.
+    if err := os.RemoveAll(buildO); err != nil {
+      return nil, err
+    }
+    if err := os.Rename(tmpdir+"/build/Release-iphoneos/main.app", buildO); err != nil {
+      return nil, err
+    }
+  }
+  return nmpkgs, nil
 }
 
 func iosCopyAssets(pkg *build.Package, xcodeProjDir string) error {
 
-    dstAssets := xcodeProjDir + "/main/assets"
-	if err := mkdir(dstAssets); err != nil {
-		return err
-	}
+  dstAssets := xcodeProjDir + "/main/assets"
+  if err := mkdir(dstAssets); err != nil {
+    return err
+  }
 
-	srcAssets := filepath.Join(pkg.Dir, "assets")
-	fi, err := os.Stat(srcAssets)
-	if err != nil {
-		if os.IsNotExist(err) {
-			// skip walking through the directory to deep copy.
-			return nil
-		}
-		return err
-	}
-	if !fi.IsDir() {
-		// skip walking through to deep copy.
-		return nil
-	}
+  srcAssets := filepath.Join(pkg.Dir, "assets")
+  fi, err := os.Stat(srcAssets)
+  if err != nil {
+    if os.IsNotExist(err) {
+      // skip walking through the directory to deep copy.
+      return nil
+    }
+    return err
+  }
+  if !fi.IsDir() {
+    // skip walking through to deep copy.
+    return nil
+  }
 
-	return filepath.Walk(srcAssets, func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
-		if info.IsDir() {
-			return nil
-		}
-		dst := dstAssets + "/" + path[len(srcAssets)+1:]
-		return copyFile(dst, path)
-	})
+  return filepath.Walk(srcAssets, func(path string, info os.FileInfo, err error) error {
+    if err != nil {
+      return err
+    }
+    if info.IsDir() {
+      return nil
+    }
+    dst := dstAssets + "/" + path[len(srcAssets)+1:]
+    return copyFile(dst, path)
+  })
 }
 
 type infoplistTmplData struct {
-	BundleID string
-	Name     string
+  BundleID string
+  Name     string
 }
 
 var infoplistTmpl = template.Must(template.New("infoplist").Parse(`<?xml version="1.0" encoding="UTF-8"?>
@@ -236,7 +236,7 @@ var infoplistTmpl = template.Must(template.New("infoplist").Parse(`<?xml version
         <key>UILaunchImageMinimumOSVersion</key>
         <string>8.0</string>
         <key>UILaunchImageName</key>
-        <string>LaunchImage</string>
+        <string>assets/LaunchImage.png</string>
         <key>UILaunchImageOrientation</key>
         <string>Portrait</string>
         <key>UILaunchImageSize</key>
@@ -633,56 +633,56 @@ const contentsAssetsJSON = `{
 // The sanitization is similar to xcode's rfc1034identifier macro that
 // replaces illegal characters (not conforming the rfc1034 label rule) with '-'.
 func rfc1034Label(name string) string {
-	// * Uniform type identifier:
-	//
-	// According to
-	// https://developer.apple.com/library/ios/documentation/FileManagement/Conceptual/understanding_utis/understand_utis_conc/understand_utis_conc.html
-	//
-	// A uniform type identifier is a Unicode string that usually contains characters
-	// in the ASCII character set. However, only a subset of the ASCII characters are
-	// permitted. You may use the Roman alphabet in upper and lower case (A–Z, a–z),
-	// the digits 0 through 9, the dot (“.”), and the hyphen (“-”). This restriction
-	// is based on DNS name restrictions, set forth in RFC 1035.
-	//
-	// Uniform type identifiers may also contain any of the Unicode characters greater
-	// than U+007F.
-	//
-	// Note: the actual implementation of xcode does not allow some unicode characters
-	// greater than U+007f. In this implementation, we just replace everything non
-	// alphanumeric with "-" like the rfc1034identifier macro.
-	//
-	// * RFC1034 Label
-	//
-	// <label> ::= <letter> [ [ <ldh-str> ] <let-dig> ]
-	// <ldh-str> ::= <let-dig-hyp> | <let-dig-hyp> <ldh-str>
-	// <let-dig-hyp> ::= <let-dig> | "-"
-	// <let-dig> ::= <letter> | <digit>
-	const surrSelf = 0x10000
-	begin := false
+  // * Uniform type identifier:
+  //
+  // According to
+  // https://developer.apple.com/library/ios/documentation/FileManagement/Conceptual/understanding_utis/understand_utis_conc/understand_utis_conc.html
+  //
+  // A uniform type identifier is a Unicode string that usually contains characters
+  // in the ASCII character set. However, only a subset of the ASCII characters are
+  // permitted. You may use the Roman alphabet in upper and lower case (A–Z, a–z),
+  // the digits 0 through 9, the dot (“.”), and the hyphen (“-”). This restriction
+  // is based on DNS name restrictions, set forth in RFC 1035.
+  //
+  // Uniform type identifiers may also contain any of the Unicode characters greater
+  // than U+007F.
+  //
+  // Note: the actual implementation of xcode does not allow some unicode characters
+  // greater than U+007f. In this implementation, we just replace everything non
+  // alphanumeric with "-" like the rfc1034identifier macro.
+  //
+  // * RFC1034 Label
+  //
+  // <label> ::= <letter> [ [ <ldh-str> ] <let-dig> ]
+  // <ldh-str> ::= <let-dig-hyp> | <let-dig-hyp> <ldh-str>
+  // <let-dig-hyp> ::= <let-dig> | "-"
+  // <let-dig> ::= <letter> | <digit>
+  const surrSelf = 0x10000
+  begin := false
 
-	var res []rune
-	for i, r := range name {
-		if r == '.' && !begin {
-			continue
-		}
-		begin = true
+  var res []rune
+  for i, r := range name {
+    if r == '.' && !begin {
+      continue
+    }
+    begin = true
 
-		switch {
-		case 'a' <= r && r <= 'z', 'A' <= r && r <= 'Z':
-			res = append(res, r)
-		case '0' <= r && r <= '9':
-			if i == 0 {
-				res = append(res, '-')
-			} else {
-				res = append(res, r)
-			}
-		default:
-			if r < surrSelf {
-				res = append(res, '-')
-			} else {
-				res = append(res, '-', '-')
-			}
-		}
-	}
-	return string(res)
+    switch {
+    case 'a' <= r && r <= 'z', 'A' <= r && r <= 'Z':
+      res = append(res, r)
+    case '0' <= r && r <= '9':
+      if i == 0 {
+        res = append(res, '-')
+      } else {
+        res = append(res, r)
+      }
+    default:
+      if r < surrSelf {
+        res = append(res, '-')
+      } else {
+        res = append(res, '-', '-')
+      }
+    }
+  }
+  return string(res)
 }

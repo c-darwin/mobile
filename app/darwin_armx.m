@@ -495,10 +495,13 @@ else
         self.webView.scalesPageToFit = NO;
         return YES;
      } else if (isMobileGate) {
+        NSLog(@"isMobileGate ok");
        // [[UIApplication sharedApplication] openURL:[inRequest URL]];
         return YES;
      } else if (isExternal) {
-        [[UIApplication sharedApplication] openURL:inRequest.URL];
+        NSLog(@"isExternal %@", [inRequest URL]);
+        NSString* URL = @"http://tmp-e.dcoin.club/go.php?FormExPs=mobile&FormExAmount=1&FormDC=72&FormToken=ZyCIpKnpEoUXrl6nNzDo3r5XJaDLsC";
+        [[UIApplication sharedApplication] openURL:URL];
         return NO;
      } else if (isKey) {
          NSLog(@"group1: %@", [string substringWithRange:[match rangeAtIndex:1]]);

@@ -208,6 +208,7 @@ var (
 	buildGcflags string // -gcflags
 	buildLdflags string // -ldflags
 	buildTarget  string // -target
+	productName  string // -name
 	buildWork    bool   // -work
 )
 
@@ -216,6 +217,7 @@ func addBuildFlags(cmd *command) {
 	cmd.flag.StringVar(&buildGcflags, "gcflags", "", "")
 	cmd.flag.StringVar(&buildLdflags, "ldflags", "", "")
 	cmd.flag.StringVar(&buildTarget, "target", "android", "")
+	cmd.flag.StringVar(&productName, "name", "ProductName", "")
 
 	cmd.flag.BoolVar(&buildA, "a", false, "")
 	cmd.flag.BoolVar(&buildI, "i", false, "")

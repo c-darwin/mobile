@@ -27,14 +27,14 @@ func goIOSBuild(pkg *build.Package) (map[string]bool, error) {
   }
 
   //productName := rfc1034Label(path.Base(pkg.ImportPath))
-  if productName == "" {
-    productName = "ProductName" // like xcode.
+  if *productName == "" {
+    *productName = "ProductName" // like xcode.
   }
 
   infoplist := new(bytes.Buffer)
   if err := infoplistTmpl.Execute(infoplist, infoplistTmplData{
     // TODO: better bundle id.
-    BundleID: productName,
+    BundleID: *productName,
     Name:     strings.Title(path.Base(pkg.ImportPath)),
   }); err != nil {
     return nil, err

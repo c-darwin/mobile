@@ -15,7 +15,10 @@ import (
   "path/filepath"
   "strings"
   "text/template"
+  "flag"
 )
+
+var productName = flag.String("ProductName", "ProductName", "Product Name")
 
 func goIOSBuild(pkg *build.Package) (map[string]bool, error) {
   src := pkg.ImportPath
@@ -23,7 +26,7 @@ func goIOSBuild(pkg *build.Package) (map[string]bool, error) {
     return nil, fmt.Errorf("-o must have an .app for target=ios")
   }
 
-  productName := rfc1034Label(path.Base(pkg.ImportPath))
+  //productName := rfc1034Label(path.Base(pkg.ImportPath))
   if productName == "" {
     productName = "ProductName" // like xcode.
   }
@@ -31,7 +34,7 @@ func goIOSBuild(pkg *build.Package) (map[string]bool, error) {
   infoplist := new(bytes.Buffer)
   if err := infoplistTmpl.Execute(infoplist, infoplistTmplData{
     // TODO: better bundle id.
-    BundleID: "org.golang.todo." + productName,
+    BundleID: productName,
     Name:     strings.Title(path.Base(pkg.ImportPath)),
   }); err != nil {
     return nil, err

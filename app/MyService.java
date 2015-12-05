@@ -2,12 +2,15 @@ package org.golang.app;
 
 import android.app.Notification;
 import android.app.PendingIntent;
-import android.app.Service;
+import android.app.Service ;
 import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
+import java.net.Socket;
+import android.os.SystemClock;
 
-public class MyService extends Service {
+
+public class MyService extends Service  {
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -38,11 +41,31 @@ public class MyService extends Service {
 
         sendNotif();
 
-        GoNativeActivity.load();
+
+        Runnable r = new Runnable() {
+            public void run() {
+                GoNativeActivity.load();
+            }
+        };
+        Thread t = new Thread(r);
+        t.start();
+
 
         Intent dialogIntent = new Intent(this, GoNativeActivity.class);
         dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(dialogIntent);
+
+        /*SystemClock.sleep(3000);
+
+        try {
+            Intent intent1 = new Intent(Intent.ACTION_VIEW);
+            Uri data = Uri.parse("http://localhost:8089");
+            intent1.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent1.setData(data);
+            startActivity(intent1);
+        } catch (Exception e) {
+            Log.e("Go", "http://localhost:8089 failed", e);
+        }*/
     }
 
 
@@ -73,4 +96,16 @@ public class MyService extends Service {
         addIntent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
         getApplicationContext().sendBroadcast(addIntent);
     }
+
+    public static boolean DcoinStarted(int port) {
+        for (int i=0;i<60;i++) {
+            try (Socket ignored = new Socket("localhost", port)) {
+                return true;
+            } catch (Exception ignored) {
+                SystemClock.sleep(500);
+            }
+        }
+        return true;
+    }
+
 }

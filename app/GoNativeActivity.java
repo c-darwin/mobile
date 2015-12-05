@@ -91,15 +91,23 @@ public class GoNativeActivity extends NativeActivity {
     public void onStart(Bundle savedInstanceState) {
 
 		Log.d("Go", "GoNativeActivity onStart");
-    	  try {
-			  Intent intent = new Intent(Intent.ACTION_VIEW);
-			  Uri data = Uri.parse("http://localhost:8089");
-			  intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			  intent.setData(data);
-			  startActivity(intent);
-		  } catch (Exception e) {
-			  Log.e("Go", "http://localhost:8089 failed", e);
-		  }
+		Runnable r = new Runnable() {
+			public void run() {
+				if (MyService.DcoinStarted(8089)) {
+					try {
+						Intent intent1 = new Intent(Intent.ACTION_VIEW);
+						Uri data = Uri.parse("http://localhost:8089");
+						intent1.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+						intent1.setData(data);
+						startActivity(intent1);
+					} catch (Exception e) {
+						Log.e("Go", "http://localhost:8089 failed", e);
+					}
+				}
+			}
+		};
+		Thread t = new Thread(r);
+		t.start();
     }
     @Override
     public void onCreate(Bundle savedInstanceState) {

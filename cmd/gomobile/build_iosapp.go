@@ -105,13 +105,13 @@ func goIOSBuild(pkg *build.Package) (map[string]bool, error) {
     return nil, err
   }
 
-  cmd = exec.Command(
+  /*cmd = exec.Command(
     "cp", "-R",
     tmpdir, "/Users/admin/mainapp/",
   )
   if err := runCmd(cmd); err != nil {
     return nil, err
-  }
+  }*/
 
   // Build and move the release build to the output directory.
   cmd = exec.Command(

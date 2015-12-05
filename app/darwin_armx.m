@@ -69,7 +69,7 @@ struct utsname sysInfo;
 
     NSLog(@"golog2 didFinishLaunchingWithOptions");
 
-    NSString *searchedString = @"http://127.0.0.1:8089/ajax?controllerName=dcoinKey&password=2fh4h3Fdd";
+    /*NSString *searchedString = @"http://127.0.0.1:8089/ajax?controllerName=dcoinKey&password=2fh4h3Fdd";
     NSRange   searchedRange = NSMakeRange(0, [searchedString length]);
     NSString *pattern = @"dcoinKey&password=(.*)$";
     NSError  *error = nil;
@@ -81,7 +81,7 @@ struct utsname sysInfo;
     }
 
     NSTextCheckingResult *match = [regex firstMatchInString:searchedString options:0 range: searchedRange];
-
+*/
     if ([UIApplication instancesRespondToSelector:@selector(registerUserNotificationSettings:)]) {
         [[UIApplication sharedApplication] registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:UIUserNotificationTypeAlert|UIUserNotificationTypeSound|UIUserNotificationTypeBadge categories:nil]];
     }

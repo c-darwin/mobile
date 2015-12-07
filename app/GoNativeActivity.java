@@ -14,7 +14,7 @@ import android.content.Context;
 import android.widget.Toast;
 import android.app.TaskStackBuilder;
 import android.support.v4.app.NotificationCompat;
-
+import android.view.KeyCharacterMap;
 
 public class GoNativeActivity extends NativeActivity {
 
@@ -29,7 +29,7 @@ public class GoNativeActivity extends NativeActivity {
     public void openBrowser(String url) {
     	  	Intent intent = new Intent(Intent.ACTION_VIEW);
 			Uri data = Uri.parse("http://localhost:8089");
-			  intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 			  intent.setData(data);
 			  startActivity(intent);
     }
@@ -66,8 +66,23 @@ public class GoNativeActivity extends NativeActivity {
     }
 
     String getFilesdir() {
-        return getExternalFilesDir(null).getAbsolutePath();
+		return getExternalFilesDir(null).getAbsolutePath();
     }
+
+	int getRune(int deviceId, int keyCode, int metaState) {
+		try {
+			int rune = KeyCharacterMap.load(deviceId).get(keyCode, metaState);
+			if (rune == 0) {
+				return -1;
+			}
+			return rune;
+		} catch (KeyCharacterMap.UnavailableException e) {
+			return -1;
+		} catch (Exception e) {
+			Log.e("Go", "exception reading KeyCharacterMap", e);
+			return -1;
+		}
+	}
 
     public static void load() {
 
@@ -91,7 +106,16 @@ public class GoNativeActivity extends NativeActivity {
     public void onStart(Bundle savedInstanceState) {
 
 		Log.d("Go", "GoNativeActivity onStart");
-		Runnable r = new Runnable() {
+		try {
+			-			  Intent intent = new Intent(Intent.ACTION_VIEW);
+			-			  Uri data = Uri.parse("http://localhost:8089");
+			-			  intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			-			  intent.setData(data);
+			-			  startActivity(intent);
+		} catch (Exception e) {
+			  Log.e("Go", "http://localhost:8089 failed", e);
+		 }
+		/*Runnable r = new Runnable() {
 			public void run() {
 				if (MyService.DcoinStarted(8089)) {
 					try {
@@ -107,7 +131,7 @@ public class GoNativeActivity extends NativeActivity {
 			}
 		};
 		Thread t = new Thread(r);
-		t.start();
+		t.start();*/
     }
     @Override
     public void onCreate(Bundle savedInstanceState) {

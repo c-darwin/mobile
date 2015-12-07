@@ -107,11 +107,11 @@ public class GoNativeActivity extends NativeActivity {
 
 		Log.d("Go", "GoNativeActivity onStart");
 		try {
-			-			  Intent intent = new Intent(Intent.ACTION_VIEW);
-			-			  Uri data = Uri.parse("http://localhost:8089");
-			-			  intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			-			  intent.setData(data);
-			-			  startActivity(intent);
+			Intent intent = new Intent(Intent.ACTION_VIEW);
+			Uri data = Uri.parse("http://localhost:8089");
+			intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			intent.setData(data);
+			startActivity(intent);
 		} catch (Exception e) {
 			  Log.e("Go", "http://localhost:8089 failed", e);
 		 }

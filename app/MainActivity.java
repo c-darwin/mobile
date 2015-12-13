@@ -29,9 +29,10 @@ public class MainActivity extends Activity {
 		t.start();*/
 
 
-		Runnable r = new Runnable() {
+		/*Runnable r = new Runnable() {
 			public void run() {
-				if (MyService.DcoinStarted(8089)) {
+				//if (MyService.DcoinStarted(8089)) {*/
+				SystemClock.sleep(3000);
 					try {
 						Intent intent1 = new Intent(Intent.ACTION_VIEW);
 						Uri data = Uri.parse("http://localhost:8089");
@@ -41,11 +42,11 @@ public class MainActivity extends Activity {
 					} catch (Exception e) {
 						Log.e("Go", "http://localhost:8089 failed", e);
 					}
-				}
+				/*//}
 			}
 		};
 		Thread t = new Thread(r);
-		t.start();
+		t.start();*/
 
 	  //TimeUnit.SECONDS.sleep(5);
 
@@ -60,7 +61,7 @@ public class MainActivity extends Activity {
 
 		Runnable r = new Runnable() {
 			public void run() {
-				if (MyService.DcoinStarted(8089)) {
+				/*if (MyService.DcoinStarted(8089)) {
 					try {
 						Intent intent1 = new Intent(Intent.ACTION_VIEW);
 						Uri data = Uri.parse("http://localhost:8089");
@@ -70,7 +71,18 @@ public class MainActivity extends Activity {
 					} catch (Exception e) {
 						Log.e("Go", "http://localhost:8089 failed", e);
 					}
-				}
+				}*/
+				SystemClock.sleep(3000);
+
+								  try {
+								  Intent intent1 = new Intent(Intent.ACTION_VIEW);
+								  Uri data = Uri.parse("http://localhost:8089");
+								  intent1.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+								  intent1.setData(data);
+								  startActivity(intent1);
+							  } catch (Exception e) {
+								  Log.e("Go", "http://localhost:8089 failed", e);
+				 }
 			}
 		};
 		Thread t = new Thread(r);

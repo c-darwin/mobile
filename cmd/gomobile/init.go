@@ -11,7 +11,7 @@ import (
 	"bytes"
 	"compress/gzip"
 	"crypto/sha256"
-	"encoding/hex"
+//	"encoding/hex"
 	"fmt"
 	"io"
 	"io/ioutil"

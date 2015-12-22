@@ -42,7 +42,7 @@ var initThreadID uint64
 
 //export dcoinStart
 func dcoinStart(){
-	go dcoin.Start(C.GoString(C.GetFilesDir()));
+	go dcoin.Start(C.GoString(C.GetFilesDir()), nil);
 }
 
 //export dcoinStop

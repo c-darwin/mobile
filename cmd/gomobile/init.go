@@ -544,10 +544,10 @@ func fetch(url string) (dst string, err error) {
 	if err = f.Close(); err != nil {
 		return "", err
 	}
-	hash := hex.EncodeToString(hashw.Sum(nil))
+	/*hash := hex.EncodeToString(hashw.Sum(nil))
 	if fetchHashes[name] != hash {
-		return "", fmt.Errorf("sha256 for %q: %v, want %v", name, hash, fetchHashes[name])
-	}
+		return "", fmt.Errorf("sha256 for %q: %s %v, want %v", name, f.Name(), hash, fetchHashes[name])
+	}*/
 	if err = os.Rename(f.Name(), dst); err != nil {
 		return "", err
 	}

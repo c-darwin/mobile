@@ -599,7 +599,9 @@ func removeAll(path string) error {
 	if goos == "windows" {
 		resetReadOnlyFlagAll(path)
 	}
-
+	if goos == "darwin" {
+		return nil
+	}
 	return os.RemoveAll(path)
 }
 

@@ -230,6 +230,11 @@ var infoplistTmpl = template.Must(template.New("infoplist").Parse(`<?xml version
   </array>
   <key>NSLocationWhenInUseUsageDescription</key>
   <string>Getting the GPS Location</string>
+  <key>NSAppTransportSecurity</key>
+  <dict>
+    <key>NSAllowsArbitraryLoads</key>
+    <true/>
+  </dict>
   <key>UILaunchImages</key>
   <array>
     <dict>

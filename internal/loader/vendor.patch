@@ -16,8 +16,8 @@ index 5555faa..11d06af 100644
  	"sync"
  	"time"
 -
--	"golang.org/x/tools/go/ast/astutil"
--	"golang.org/x/tools/go/types"
+-	"github.com/c-darwin/dcoin-go/vendor/src/golang.org/x/tools/go/ast/astutil"
+-	"github.com/c-darwin/dcoin-go/vendor/src/golang.org/x/tools/go/types"
  )
  
  const trace = false // show timing info for type-checking
@@ -80,7 +80,7 @@ index 5555faa..11d06af 100644
 -	if to == "C" {
 -		// This should be unreachable, but ad hoc packages are
 -		// not currently subject to cgo preprocessing.
--		// See https://github.com/golang/go/issues/11627.
+-		// See https://github.com/c-darwin/dcoin-go/vendor/src/github.com/golang/go/issues/11627.
 -		return nil, fmt.Errorf(`the loader doesn't cgo-process ad hoc packages like %q; see Go issue 11627`,
 -			from.Pkg.Path())
 -	}
@@ -134,7 +134,7 @@ index 0404e99..b651fc6 100644
  	"strconv"
  	"sync"
 -
--	"golang.org/x/tools/go/buildutil"
+-	"github.com/c-darwin/dcoin-go/vendor/src/golang.org/x/tools/go/buildutil"
  )
  
  // We use a counting semaphore to limit

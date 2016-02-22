@@ -20,6 +20,11 @@ public class MyService extends Service  {
 
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d("Go", "MyService onStartCommand");
+        SystemClock.sleep(500);
+        Intent i = new Intent(this, WViewActivity.class);
+        i.addFlags(i.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(i);
+
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -42,21 +47,20 @@ public class MyService extends Service  {
         sendNotif();
 
 
-        Runnable r = new Runnable() {
-            public void run() {
+        //Runnable r = new Runnable() {
+        //    public void run() {
                 GoNativeActivity.load();
-            }
-        };
-        Thread t = new Thread(r);
-        t.start();
-
+        //    }
+        //};
+        //Thread t = new Thread(r);
+        //t.start();
 
         Intent dialogIntent = new Intent(this, GoNativeActivity.class);
         dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(dialogIntent);
 
-        /*SystemClock.sleep(3000);
 
+/*
         try {
             Intent intent1 = new Intent(Intent.ACTION_VIEW);
             Uri data = Uri.parse("http://localhost:8089");

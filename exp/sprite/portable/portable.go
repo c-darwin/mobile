@@ -13,8 +13,8 @@ import (
 	"image"
 	"image/draw"
 
-	xdraw "golang.org/x/image/draw"
-	"golang.org/x/image/math/f64"
+	xdraw "github.com/c-darwin/dcoin-go/vendor/src/golang.org/x/image/draw"
+	"github.com/c-darwin/dcoin-go/vendor/src/golang.org/x/image/math/f64"
 	"github.com/c-darwin/mobile/event/size"
 	"github.com/c-darwin/mobile/exp/f32"
 	"github.com/c-darwin/mobile/exp/sprite"
@@ -165,7 +165,7 @@ func (e *engine) render(n *sprite.Node, t clock.Time) {
 // traditional affine transform, use the inverse of the affine matrix.
 func affine(dst *image.RGBA, src image.Image, srcb image.Rectangle, mask image.Image, a *f32.Affine, op draw.Op) {
 	// For legacy compatibility reasons, the matrix a transforms from dst-space
-	// to src-space. The golang.org/x/image/draw package's matrices transform
+	// to src-space. The github.com/c-darwin/dcoin-go/vendor/src/golang.org/x/image/draw package's matrices transform
 	// from src-space to dst-space, so we invert (and adjust for different
 	// origins).
 	i := *a

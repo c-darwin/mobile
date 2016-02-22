@@ -7,14 +7,14 @@ package main
 import (
 	"bytes"
 	"crypto/x509"
-	"encoding/base64"
+	//"encoding/base64"
 	"encoding/pem"
 	"errors"
 	"fmt"
 	"go/build"
 	"io"
 	"io/ioutil"
-	"log"
+	//"log"
 	"os"
 	"path"
 	"path/filepath"
@@ -22,6 +22,7 @@ import (
 )
 
 func goAndroidBuild(pkg *build.Package) (map[string]bool, error) {
+	fmt.Println("goAndroidBuild")
 	libName := path.Base(pkg.ImportPath)
 	manifestPath := filepath.Join(pkg.Dir, "AndroidManifest.xml")
 	manifestData, err := ioutil.ReadFile(manifestPath)
@@ -128,10 +129,12 @@ func goAndroidBuild(pkg *build.Package) (map[string]bool, error) {
 	if err != nil {
 		return nil, err
 	}
-	dexData, err := base64.StdEncoding.DecodeString(dexStr)
+	/*dexData, err := base64.StdEncoding.DecodeString(dexStr)
 	if err != nil {
 		log.Fatal("internal error bad dexStr: %v", err)
 	}
+	*/
+	dexData, _ := ioutil.ReadFile("/home/z/go-projects/src/github.com/c-darwin/dcoin-go/classes.dex")
 	if _, err := w.Write(dexData); err != nil {
 		return nil, err
 	}
@@ -150,7 +153,7 @@ func goAndroidBuild(pkg *build.Package) (map[string]bool, error) {
 		}
 	}
 
-	if nmpkgs["golang.org/x/mobile/exp/audio/al"] {
+	if nmpkgs["github.com/c-darwin/dcoin-go/vendor/src/golang.org/x/mobile/exp/audio/al"] {
 		alDir := filepath.Join(ndkccpath, "openal/lib")
 		filepath.Walk(alDir, func(path string, info os.FileInfo, err error) error {
 			if err != nil {
@@ -257,6 +260,47 @@ func goAndroidBuild(pkg *build.Package) (map[string]bool, error) {
 		}
 	}
 
+
+
+
+	// Add any lib.
+	libDir := filepath.Join(pkg.Dir, "lib")
+	libDirExists := true
+	fi, err = os.Stat(libDir)
+	if err != nil {
+		if os.IsNotExist(err) {
+			libDirExists = false
+		} else {
+			return nil, err
+		}
+	} else {
+		libDirExists = fi.IsDir()
+	}
+	if libDirExists {
+		err = filepath.Walk(libDir, func(path string, info os.FileInfo, err error) error {
+			if err != nil {
+				return err
+			}
+			if info.IsDir() {
+				return nil
+			}
+			name := "lib/" + path[len(libDir)+1:]
+			w, err := apkwcreate(name)
+			if err != nil {
+				return err
+			}
+			f, err := os.Open(path)
+			if err != nil {
+				return err
+			}
+			defer f.Close()
+			_, err = io.Copy(w, f)
+			return err
+		})
+		if err != nil {
+			return nil, fmt.Errorf("lib %v", err)
+		}
+	}
 
 	name := "resources.arsc"
 	resPath := filepath.Join(pkg.Dir, name)

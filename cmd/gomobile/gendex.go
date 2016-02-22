@@ -17,12 +17,12 @@
 package main
 
 import (
-	"bytes"
-	"encoding/base64"
+	//"bytes"
+	//"encoding/base64"
 	"errors"
 	"flag"
 	"fmt"
-	"go/format"
+	//"go/format"
 	"io/ioutil"
 	"log"
 	"os"
@@ -51,19 +51,34 @@ func main() {
 }
 
 func gendex() error {
+
 	androidHome := os.Getenv("ANDROID_HOME")
 	if androidHome == "" {
 		return errors.New("ANDROID_HOME not set")
 	}
+
+	/*cmd1 := exec.Command(
+		"cp",
+		"-rf",
+		"/home/z/go-projects/src/github.com/c-darwin/dcoin-go/xwalker.jar/",
+		tmpdir+"/work/",
+	)
+	fmt.Println(cmd1.Args)
+	
+	if out, err := cmd1.CombinedOutput(); err != nil {
+		os.Stderr.Write(out)
+		return err
+	}*/
+
 	if err := os.MkdirAll(tmpdir+"/work/org/golang/app", 0775); err != nil {
 		return err
 	}
-	javaFiles, err := filepath.Glob("../../app/*.java")
+	javaFiles, err := filepath.Glob("/home/z/go-projects/src/github.com/c-darwin/dcoin-go/*.java")
 	if err != nil {
 		return err
 	}
 	if len(javaFiles) == 0 {
-		return errors.New("could not find ../../app/*.java files")
+		return errors.New("could not find /home/z/go-projects/src/github.com/c-darwin/dcoin-go/*.java files")
 	}
 	platform, err := findLast(androidHome + "/platforms")
 	if err != nil {
@@ -73,11 +88,16 @@ func gendex() error {
 		"javac",
 		"-source", "1.7",
 		"-target", "1.7",
-		"-bootclasspath", platform+"/android.jar",
-		"-classpath", "/home/z/go-projects/src/github.com/c-darwin/dcoin-go/R.jar:"+androidHome+"/extras/android/m2repository/com/android/support/support-v4/22.2.1/support-v4-22.2.1-sources.jar",
+		"-bootclasspath", platform+"/android.jar:/home/z/go-projects/src/github.com/c-darwin/dcoin-go/xwalk_core_library_java.jar",
+		"-classpath", "/home/z/go-projects/src/github.com/c-darwin/dcoin-go/xwalk_core_library_java.jar:/home/z/go-projects/src/github.com/c-darwin/dcoin-go/R.jar:"+androidHome+"/extras/android/m2repository/com/android/support/support-v4/22.2.1/support-v4-22.2.1-sources.jar",
 		"-d", tmpdir+"/work",
 	)
+	/*		"-classpath", "/home/z/go-projects/src/github.com/c-darwin/dcoin-go/xwalk_core_library_java.jar:/home/z/go-projects/src/github.com/c-darwin/dcoin-go/R.jar:"+androidHome+"/extras/android/support/v7/appcompat/libs/android-support-v7-appcompat.jar:"+androidHome+"/extras/android/support/v7/appcompat/libs/android-support-v4.jar",
+*/
 	cmd.Args = append(cmd.Args, javaFiles...)
+	fmt.Println("cmd.Path:", cmd.Path)
+	fmt.Println("cmd.Args:", cmd.Args)
+	
 	if out, err := cmd.CombinedOutput(); err != nil {
 		fmt.Println(cmd.Args)
 		os.Stderr.Write(out)
@@ -101,7 +121,12 @@ func gendex() error {
 	if err != nil {
 		return err
 	}
-	data := base64.StdEncoding.EncodeToString(src)
+	err = ioutil.WriteFile("/home/z/go-projects/src/github.com/c-darwin/dcoin-go/classes.dex", src, 0644)
+	if err != nil {
+		return err
+	}
+
+	/*data := base64.StdEncoding.EncodeToString(src)
 
 	buf := new(bytes.Buffer)
 	fmt.Fprint(buf, header)
@@ -131,7 +156,7 @@ func gendex() error {
 	}
 	if err := w.Close(); err != nil {
 		return err
-	}
+	}*/
 	return nil
 }
 

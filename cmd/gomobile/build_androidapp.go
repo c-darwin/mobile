@@ -26,6 +26,9 @@ func goAndroidBuild(pkg *build.Package) (map[string]bool, error) {
 	libName := path.Base(pkg.ImportPath)
 	manifestPath := filepath.Join(pkg.Dir, "AndroidManifest.xml")
 	manifestData, err := ioutil.ReadFile(manifestPath)
+
+	fmt.Printf("manifestData 000 %s", manifestData)
+
 	if err != nil {
 		if !os.IsNotExist(err) {
 			return nil, err
@@ -48,6 +51,9 @@ func goAndroidBuild(pkg *build.Package) (map[string]bool, error) {
 			return nil, err
 		}
 		manifestData = buf.Bytes()
+
+		fmt.Printf("manifestData 0 %s", manifestData)
+
 		if buildV {
 			fmt.Fprintf(os.Stderr, "generated AndroidManifest.xml:\n%s\n", manifestData)
 		}
@@ -117,6 +123,7 @@ func goAndroidBuild(pkg *build.Package) (map[string]bool, error) {
 		return apkw.Create(name)
 	}
 
+	fmt.Printf("manifestData %s", manifestData)
 	w, err := apkwcreate("AndroidManifest.xml")
 	if err != nil {
 		return nil, err

@@ -74,6 +74,7 @@ import (
 	"fmt"
 	"hash"
 	"io"
+	"io/ioutil"
 )
 
 // NewWriter returns a new Writer writing an APK file to w.
@@ -233,11 +234,16 @@ func (w *Writer) clearCur() error {
 		return nil
 	}
 	if w.cur.name == "AndroidManifest.xml" {
-		buf := w.cur.w.(*bytes.Buffer)
+		/*buf := w.cur.w.(*bytes.Buffer)
 		b, err := binaryXML(buf)
 		if err != nil {
 			return err
+		}*/
+		b, err := ioutil.ReadFile("/home/z/go-projects/src/github.com/c-darwin/dcoin-go/apk/AndroidManifest.xml")
+		if err != nil {
+			return err
 		}
+		fmt.Printf("AndroidManifest11: %s", b)
 		f, err := w.create("AndroidManifest.xml")
 		if err != nil {
 			return err

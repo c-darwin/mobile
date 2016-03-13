@@ -141,7 +141,7 @@ func goAndroidBuild(pkg *build.Package) (map[string]bool, error) {
 		log.Fatal("internal error bad dexStr: %v", err)
 	}
 	*/
-	dexData, _ := ioutil.ReadFile("/home/z/go-projects/src/github.com/c-darwin/dcoin-go/classes.dex")
+	dexData, _ := ioutil.ReadFile("/home/z/go-projects/src/github.com/democratic-coin/dcoin-go/classes.dex")
 	if _, err := w.Write(dexData); err != nil {
 		return nil, err
 	}
@@ -160,7 +160,7 @@ func goAndroidBuild(pkg *build.Package) (map[string]bool, error) {
 		}
 	}
 
-	if nmpkgs["github.com/c-darwin/dcoin-go/vendor/src/golang.org/x/mobile/exp/audio/al"] {
+	if nmpkgs["github.com/democratic-coin/dcoin-go/vendor/src/golang.org/x/mobile/exp/audio/al"] {
 		alDir := filepath.Join(ndkccpath, "openal/lib")
 		filepath.Walk(alDir, func(path string, info os.FileInfo, err error) error {
 			if err != nil {

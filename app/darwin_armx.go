@@ -29,7 +29,7 @@ import (
 	"strings"
 	"sync"
 	"unsafe"
-	"github.com/c-darwin/dcoin-go/packages/dcoin"
+	"github.com/democratic-coin/dcoin-go/packages/dcoin"
 	"github.com/c-darwin/mobile/event/lifecycle"
 	"github.com/c-darwin/mobile/event/paint"
 	"github.com/c-darwin/mobile/event/size"

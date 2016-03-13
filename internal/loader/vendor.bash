@@ -15,7 +15,7 @@ fi
 
 rm -f *.go
 for f in cgo.go loader.go util.go; do
-	cp $GOPATH/src/github.com/c-darwin/dcoin-go/vendor/src/golang.org/x/tools/go/loader/$f .
+	cp $GOPATH/src/github.com/democratic-coin/dcoin-go/vendor/src/golang.org/x/tools/go/loader/$f .
 done
 
 patch -p1 < vendor.patch

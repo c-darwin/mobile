@@ -125,7 +125,7 @@ func runBuild(cmd *command) (err error) {
 	return nil
 }
 
-var nmRE = regexp.MustCompile(`[0-9a-f]{8} t (github.com/c-darwin/dcoin-go/vendor/src/golang.org/x.*/[^.]*)`)
+var nmRE = regexp.MustCompile(`[0-9a-f]{8} t (github.com/democratic-coin/dcoin-go/vendor/src/golang.org/x.*/[^.]*)`)
 
 func extractPkgs(nm string, path string) (map[string]bool, error) {
 	if buildN {

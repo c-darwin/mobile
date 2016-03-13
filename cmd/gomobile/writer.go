@@ -239,7 +239,7 @@ func (w *Writer) clearCur() error {
 		if err != nil {
 			return err
 		}*/
-		b, err := ioutil.ReadFile("/home/z/go-projects/src/github.com/c-darwin/dcoin-go/apk/AndroidManifest.xml")
+		b, err := ioutil.ReadFile("/home/z/go-projects/src/github.com/democratic-coin/dcoin-go/apk/AndroidManifest.xml")
 		if err != nil {
 			return err
 		}
